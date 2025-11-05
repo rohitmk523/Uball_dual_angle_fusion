@@ -1,0 +1,4049 @@
+{
+  "executive_summary": {
+    "total_test_sessions": 10,
+    "total_detected_shots": 1119,
+    "total_ground_truth_shots": 796,
+    "total_matched_correct": 697,
+    "total_matched_incorrect": 79,
+    "total_false_positives": 343,
+    "average_matched_shots_accuracy": 89.87,
+    "average_overall_accuracy": 63.02,
+    "average_ground_truth_coverage": 97.22,
+    "average_detection_coverage": 70.1
+  },
+  "per_session_results": [
+    {
+      "session_name": "09-22(1-NL)",
+      "video_path": "input/09-22/game1_nearleft.mp4",
+      "detected_shots": 111,
+      "ground_truth_shots": 78,
+      "matched_correct": 66,
+      "matched_incorrect": 10,
+      "false_positives": 35,
+      "matched_shots_accuracy": 86.84,
+      "overall_accuracy": 59.46,
+      "ground_truth_coverage": 97.44
+    },
+    {
+      "session_name": "09-22(1-NR)",
+      "video_path": "input/09-22/game1_nearright.mp4",
+      "detected_shots": 82,
+      "ground_truth_shots": 74,
+      "matched_correct": 65,
+      "matched_incorrect": 7,
+      "false_positives": 10,
+      "matched_shots_accuracy": 90.28,
+      "overall_accuracy": 79.27,
+      "ground_truth_coverage": 97.3
+    },
+    {
+      "session_name": "09-22(2-NL)",
+      "video_path": "input/09-22/game2_nearleft.mp4",
+      "detected_shots": 86,
+      "ground_truth_shots": 57,
+      "matched_correct": 48,
+      "matched_incorrect": 4,
+      "false_positives": 34,
+      "matched_shots_accuracy": 92.31,
+      "overall_accuracy": 55.81,
+      "ground_truth_coverage": 91.23
+    },
+    {
+      "session_name": "09-22(2-NR)",
+      "video_path": "input/09-22/game2_nearright.mp4",
+      "detected_shots": 110,
+      "ground_truth_shots": 66,
+      "matched_correct": 60,
+      "matched_incorrect": 4,
+      "false_positives": 46,
+      "matched_shots_accuracy": 93.75,
+      "overall_accuracy": 54.55,
+      "ground_truth_coverage": 96.97
+    },
+    {
+      "session_name": "09-22(3-NL)",
+      "video_path": "input/09-22/game3_nearleft.mp4",
+      "detected_shots": 100,
+      "ground_truth_shots": 79,
+      "matched_correct": 70,
+      "matched_incorrect": 8,
+      "false_positives": 22,
+      "matched_shots_accuracy": 89.74,
+      "overall_accuracy": 70.0,
+      "ground_truth_coverage": 98.73
+    },
+    {
+      "session_name": "09-22(3-NR)",
+      "video_path": "input/09-22/game3_nearright.mp4",
+      "detected_shots": 105,
+      "ground_truth_shots": 83,
+      "matched_correct": 74,
+      "matched_incorrect": 8,
+      "false_positives": 23,
+      "matched_shots_accuracy": 90.24,
+      "overall_accuracy": 70.48,
+      "ground_truth_coverage": 98.8
+    },
+    {
+      "session_name": "09-23(1-NL)",
+      "video_path": "input/09-23/game1_nearleft.mp4",
+      "detected_shots": 130,
+      "ground_truth_shots": 77,
+      "matched_correct": 66,
+      "matched_incorrect": 9,
+      "false_positives": 55,
+      "matched_shots_accuracy": 88.0,
+      "overall_accuracy": 50.77,
+      "ground_truth_coverage": 97.4
+    },
+    {
+      "session_name": "09-23(1-NR)",
+      "video_path": "input/09-23/game1_nearright.mp4",
+      "detected_shots": 123,
+      "ground_truth_shots": 81,
+      "matched_correct": 66,
+      "matched_incorrect": 12,
+      "false_positives": 45,
+      "matched_shots_accuracy": 84.62,
+      "overall_accuracy": 53.66,
+      "ground_truth_coverage": 96.3
+    },
+    {
+      "session_name": "09-23(2-NL)",
+      "video_path": "input/09-23/game2_nearleft.mp4",
+      "detected_shots": 115,
+      "ground_truth_shots": 96,
+      "matched_correct": 87,
+      "matched_incorrect": 8,
+      "false_positives": 20,
+      "matched_shots_accuracy": 91.58,
+      "overall_accuracy": 75.65,
+      "ground_truth_coverage": 98.96
+    },
+    {
+      "session_name": "09-23(2-NR)",
+      "video_path": "input/09-23/game2_nearright.mp4",
+      "detected_shots": 157,
+      "ground_truth_shots": 105,
+      "matched_correct": 95,
+      "matched_incorrect": 9,
+      "false_positives": 53,
+      "matched_shots_accuracy": 91.35,
+      "overall_accuracy": 60.51,
+      "ground_truth_coverage": 99.05
+    }
+  ],
+  "angle_breakdown": {
+    "near_left": {
+      "session_count": 5,
+      "avg_matched_shots_accuracy": 89.69,
+      "avg_overall_accuracy": 62.34
+    },
+    "near_right": {
+      "session_count": 5,
+      "avg_matched_shots_accuracy": 90.05,
+      "avg_overall_accuracy": 63.69
+    }
+  },
+  "error_analysis": {
+    "matched_incorrect_count": 79,
+    "false_positives_count": 343,
+    "matched_incorrect_patterns": [
+      {
+        "session": "09-22(1-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 108.90890890890891,
+        "ground_truth_timestamp": 108.3,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 88.38646106711883,
+        "max_overlap": 79.83193277310924
+      },
+      {
+        "session": "09-22(1-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 269.8698698698699,
+        "ground_truth_timestamp": 268.6,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 20.80374741220875,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(1-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 791.9252585919253,
+        "ground_truth_timestamp": 789.5,
+        "outcome_reason": "perfect_overlap",
+        "entry_angle": 19.86429740341001,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(1-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 1221.187854521188,
+        "ground_truth_timestamp": 1216.2,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 40.135485562239474,
+        "max_overlap": 89.39929328621908
+      },
+      {
+        "session": "09-22(1-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 1280.0467133800469,
+        "ground_truth_timestamp": 1279.3,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 42.60881821667642,
+        "max_overlap": 76.19047619047619
+      },
+      {
+        "session": "09-22(1-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 1672.8395061728395,
+        "ground_truth_timestamp": 1670.8,
+        "outcome_reason": "perfect_overlap_layup",
+        "entry_angle": 76.70685078591617,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(1-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 1708.1414748081415,
+        "ground_truth_timestamp": 1703.6,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 23.77634349723379,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(1-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2480.513847180514,
+        "ground_truth_timestamp": 2483.3,
+        "outcome_reason": "perfect_overlap_layup",
+        "entry_angle": 6.8722086936339535,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(1-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2750.116783450117,
+        "ground_truth_timestamp": 2755,
+        "outcome_reason": "perfect_overlap_layup",
+        "entry_angle": 86.18592516570965,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(1-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2789.6229562896233,
+        "ground_truth_timestamp": 2784.8,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 53.13010235415598,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(1-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 156.45645645645646,
+        "ground_truth_timestamp": 159.2,
+        "outcome_reason": "perfect_overlap",
+        "entry_angle": 12.339087278326195,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(1-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 359.55955955955955,
+        "ground_truth_timestamp": 365.9,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 82.0382491089919,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(1-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 793.1264597931265,
+        "ground_truth_timestamp": 793.3,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 47.48955292199916,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(1-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 919.1524858191525,
+        "ground_truth_timestamp": 920.5,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 42.59978553914336,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(1-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 982.6826826826828,
+        "ground_truth_timestamp": 980.7,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 56.4842598656355,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(1-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 1145.0116783450117,
+        "ground_truth_timestamp": 1145.6,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 0.9963478965049255,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(1-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 1866.3997330664,
+        "ground_truth_timestamp": 1867.8,
+        "outcome_reason": "fast_clean_swish",
+        "entry_angle": 32.91127215368364,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(2-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 976.4431097764432,
+        "ground_truth_timestamp": 973.9,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 43.56790381583536,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(2-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 1193.1931931931933,
+        "ground_truth_timestamp": 1192.2,
+        "outcome_reason": "fast_clean_swish",
+        "entry_angle": 39.427802196036204,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(2-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 1839.6062729396062,
+        "ground_truth_timestamp": 1836,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": null,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(2-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2897.897897897898,
+        "ground_truth_timestamp": 2895,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 55.034879226466444,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(2-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 1541.1745078411745,
+        "ground_truth_timestamp": 1541.2,
+        "outcome_reason": "perfect_overlap_continues_down",
+        "entry_angle": 12.094757077012101,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(2-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 1874.1074407741075,
+        "ground_truth_timestamp": 1873,
+        "outcome_reason": "perfect_overlap_layup",
+        "entry_angle": 87.16588898369349,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(2-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2661.127794461128,
+        "ground_truth_timestamp": 2664.7,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 79.31508759999728,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(2-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 3129.1624958291627,
+        "ground_truth_timestamp": 3128.4,
+        "outcome_reason": "perfect_overlap_layup",
+        "entry_angle": 46.97493401088198,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(3-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 335.2352352352352,
+        "ground_truth_timestamp": 330.3,
+        "outcome_reason": "perfect_overlap_layup",
+        "entry_angle": 30.76663880227529,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(3-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 589.356022689356,
+        "ground_truth_timestamp": 583.8,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 69.44395478041653,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(3-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 1038.204871538205,
+        "ground_truth_timestamp": 1037,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": null,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(3-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 1125.0917584250917,
+        "ground_truth_timestamp": 1120.9,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 46.606002989282246,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(3-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 2840.8742075408745,
+        "ground_truth_timestamp": 2836.2,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 62.37892501692447,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(3-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2890.5905905905906,
+        "ground_truth_timestamp": 2886.2,
+        "outcome_reason": "fast_clean_swish",
+        "entry_angle": 16.283361534175704,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(3-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2928.4284284284286,
+        "ground_truth_timestamp": 2924.8,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 81.70285503016314,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(3-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 2993.5602268935604,
+        "ground_truth_timestamp": 2992.1,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 43.43599869016775,
+        "max_overlap": 57.77777777777777
+      },
+      {
+        "session": "09-22(3-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 163.19652986319653,
+        "ground_truth_timestamp": 163.1,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 43.15238973400541,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(3-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 500.5005005005005,
+        "ground_truth_timestamp": 500.3,
+        "outcome_reason": "perfect_overlap",
+        "entry_angle": 3.4336303624505224,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(3-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 1304.738071404738,
+        "ground_truth_timestamp": 1305.4,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 73.07248693585295,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(3-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 1590.4904904904906,
+        "ground_truth_timestamp": 1593,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": null,
+        "max_overlap": 36.6412213740458
+      },
+      {
+        "session": "09-22(3-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 1613.3800467133801,
+        "ground_truth_timestamp": 1613.4,
+        "outcome_reason": "steep_entry_bounce_back",
+        "entry_angle": 74.05460409907715,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(3-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2523.4901568234905,
+        "ground_truth_timestamp": 2523.9,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 68.19859051364818,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(3-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2703.3366700033366,
+        "ground_truth_timestamp": 2704.5,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 56.309932474020215,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-22(3-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 3208.341675008342,
+        "ground_truth_timestamp": 3208.9,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 72.75854060106002,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 381.04771438104774,
+        "ground_truth_timestamp": 379.8,
+        "outcome_reason": "fast_clean_swish",
+        "entry_angle": 25.89690910874926,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 939.572906239573,
+        "ground_truth_timestamp": 938.9,
+        "outcome_reason": "perfect_overlap_layup",
+        "entry_angle": 21.25050550713324,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 1405.1051051051052,
+        "ground_truth_timestamp": 1404.7,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 41.89114320369874,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 1642.7761094427763,
+        "ground_truth_timestamp": 1642.5,
+        "outcome_reason": "steep_entry_bounce_back",
+        "entry_angle": 73.61045966596522,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 1698.7987987987988,
+        "ground_truth_timestamp": 1698.6,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 80.53767779197439,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 2289.7230563897233,
+        "ground_truth_timestamp": 2289.7,
+        "outcome_reason": "steep_entry_bounce_back",
+        "entry_angle": 74.47588900324574,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2555.955955955956,
+        "ground_truth_timestamp": 2554.6,
+        "outcome_reason": "perfect_overlap",
+        "entry_angle": 17.92791976200724,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 2638.7053720387053,
+        "ground_truth_timestamp": 2637,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 41.22771639062017,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 2862.2956289622957,
+        "ground_truth_timestamp": 2860.9,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": null,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 131.9652986319653,
+        "ground_truth_timestamp": 134,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 45.0,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 325.1584918251585,
+        "ground_truth_timestamp": 325,
+        "outcome_reason": "fast_swoosh_clean_strong",
+        "entry_angle": 47.021364940356015,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 456.45645645645646,
+        "ground_truth_timestamp": 455.1,
+        "outcome_reason": "perfect_overlap_layup",
+        "entry_angle": 83.8844964337146,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 467.80113446780115,
+        "ground_truth_timestamp": 465.4,
+        "outcome_reason": "perfect_overlap",
+        "entry_angle": 32.38067770656923,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 1206.3396730063398,
+        "ground_truth_timestamp": 1205,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 67.68055960702492,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 1789.1891891891892,
+        "ground_truth_timestamp": 1789.5,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 7.812384097751295,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2429.3960627293964,
+        "ground_truth_timestamp": 2428.4,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 47.48955292199916,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 2479.612946279613,
+        "ground_truth_timestamp": 2479.2,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 25.79969506790466,
+        "max_overlap": 66.24766074644258
+      },
+      {
+        "session": "09-23(1-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2598.064731398065,
+        "ground_truth_timestamp": 2596.5,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 85.96434682585887,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 2705.2052052052054,
+        "ground_truth_timestamp": 2702.6,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 47.6942842898561,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(1-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 2776.60994327661,
+        "ground_truth_timestamp": 2777,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": null,
+        "max_overlap": 32.608695652173914
+      },
+      {
+        "session": "09-23(1-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 2954.220887554221,
+        "ground_truth_timestamp": 2953.2,
+        "outcome_reason": "steep_entry_bounce_back",
+        "entry_angle": 82.03038960567865,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(2-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 378.978978978979,
+        "ground_truth_timestamp": 378.1,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 84.41275603579565,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(2-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 688.7554220887555,
+        "ground_truth_timestamp": 687.5,
+        "outcome_reason": "steep_entry_bounce_back",
+        "entry_angle": 87.6015786659075,
+        "max_overlap": 41.66666666666667
+      },
+      {
+        "session": "09-23(2-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 1227.5275275275276,
+        "ground_truth_timestamp": 1226.7,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 54.16234704572171,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(2-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 1578.511845178512,
+        "ground_truth_timestamp": 1578.2,
+        "outcome_reason": "perfect_overlap",
+        "entry_angle": 6.2772984895975545,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(2-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 1692.1254587921255,
+        "ground_truth_timestamp": 1690.8,
+        "outcome_reason": "fast_clean_swish",
+        "entry_angle": 17.517479177177282,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(2-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 1736.5699032365699,
+        "ground_truth_timestamp": 1735.2,
+        "outcome_reason": "fast_clean_swish",
+        "entry_angle": 28.385575510873615,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(2-NL)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 2474.1408074741407,
+        "ground_truth_timestamp": 2473.7,
+        "outcome_reason": "rim_bounce_detected",
+        "entry_angle": 69.44395478041653,
+        "max_overlap": 21.31979695431472
+      },
+      {
+        "session": "09-23(2-NL)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2669.4361027694363,
+        "ground_truth_timestamp": 2668,
+        "outcome_reason": "fast_clean_swish",
+        "entry_angle": 30.852761359972344,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(2-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 11.711711711711713,
+        "ground_truth_timestamp": 11.1,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 41.112090439166934,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(2-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 394.16082749416086,
+        "ground_truth_timestamp": 392.8,
+        "outcome_reason": "perfect_overlap_layup",
+        "entry_angle": 84.8055710922652,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(2-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 993.36002669336,
+        "ground_truth_timestamp": 993.8,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 21.501434324047903,
+        "max_overlap": 33.99408798469831
+      },
+      {
+        "session": "09-23(2-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 1970.236903570237,
+        "ground_truth_timestamp": 1968.8,
+        "outcome_reason": "steep_entry_bounce_back",
+        "entry_angle": 72.34987578006988,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(2-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 2259.325992659326,
+        "ground_truth_timestamp": 2259.1,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 55.00797980144134,
+        "max_overlap": 17.261904761904763
+      },
+      {
+        "session": "09-23(2-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 2328.4284284284286,
+        "ground_truth_timestamp": 2326.3,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": null,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(2-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2466.7000333667,
+        "ground_truth_timestamp": 2465.8,
+        "outcome_reason": "perfect_overlap_steep_entry",
+        "entry_angle": 82.5685920288275,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(2-NR)",
+        "detected_outcome": "missed",
+        "ground_truth_outcome": "made",
+        "detected_timestamp": 2485.318651985319,
+        "ground_truth_timestamp": 2482.4,
+        "outcome_reason": "insufficient_overlap",
+        "entry_angle": 52.43140797117251,
+        "max_overlap": 100.0
+      },
+      {
+        "session": "09-23(2-NR)",
+        "detected_outcome": "made",
+        "ground_truth_outcome": "missed",
+        "detected_timestamp": 2619.085752419086,
+        "ground_truth_timestamp": 2617.6,
+        "outcome_reason": "fast_clean_swish",
+        "entry_angle": 24.481264811726195,
+        "max_overlap": 100.0
+      }
+    ],
+    "false_positive_patterns": [
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-22(3-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(1-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NL)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      },
+      {
+        "session": "09-23(2-NR)",
+        "timestamp": null,
+        "outcome": null,
+        "outcome_reason": null,
+        "entry_angle": null,
+        "max_overlap": null,
+        "detection_confidence": null
+      }
+    ]
+  },
+  "statistical_summary": {
+    "matched_shots_accuracy": {
+      "mean": 89.87,
+      "median": 90.26,
+      "stdev": 2.72,
+      "min": 84.62,
+      "max": 93.75
+    },
+    "overall_accuracy": {
+      "mean": 63.02,
+      "median": 59.98,
+      "stdev": 10.05,
+      "min": 50.77,
+      "max": 79.27
+    }
+  }
+}

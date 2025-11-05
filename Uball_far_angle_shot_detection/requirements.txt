@@ -1,0 +1,10 @@
+# Video clip extraction dependencies
+supabase>=2.0.0,<3.0.0
+python-dotenv==1.0.0
+websockets>=13.0
+
+# Training dependencies
+torch>=2.0.0
+ultralytics>=8.0.0
+PyYAML>=6.0
+opencv-python>=4.8.0

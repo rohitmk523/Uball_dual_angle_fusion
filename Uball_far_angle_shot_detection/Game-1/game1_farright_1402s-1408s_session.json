@@ -1,0 +1,176 @@
+{
+  "video_path": "Game-1/game1_farright.mp4",
+  "model_path": "runs/detect/basketball_yolo11n2/weights/best.pt",
+  "fps": 29.97002997002997,
+  "frame_count": 42197,
+  "duration_seconds": 1407.9732333333334,
+  "processing_timestamp": "2025-11-05T21:50:53.531477",
+  "detection_version": "far_angle_v1",
+  "stats": {
+    "total_shots": 1,
+    "made_shots": 0,
+    "missed_shots": 1,
+    "undetermined_shots": 0
+  },
+  "shots": [
+    {
+      "timestamp_seconds": 1403.7690333333333,
+      "frame": 42071,
+      "outcome": "missed",
+      "outcome_reason": "rim_bounce_frames (frames:26, up:273px)",
+      "decision_confidence": 0.95,
+      "detection_confidence": 996.7692307692307,
+      "frames_in_zone": 26,
+      "vertical_passage": false,
+      "downward_movement": 220,
+      "upward_movement": 273,
+      "trajectory_consistency": 0.4462474645030426,
+      "ball_final_position": [
+        997,
+        180
+      ],
+      "hoop_position": [
+        958,
+        265
+      ],
+      "zone_width": 80,
+      "trajectory": [
+        {
+          "frame": 42071,
+          "x": 1036,
+          "y": 233
+        },
+        {
+          "frame": 42072,
+          "x": 1031,
+          "y": 207
+        },
+        {
+          "frame": 42073,
+          "x": 1028,
+          "y": 180
+        },
+        {
+          "frame": 42099,
+          "x": 959,
+          "y": 170
+        },
+        {
+          "frame": 42100,
+          "x": 958,
+          "y": 182
+        },
+        {
+          "frame": 42101,
+          "x": 956,
+          "y": 197
+        },
+        {
+          "frame": 42102,
+          "x": 955,
+          "y": 214
+        },
+        {
+          "frame": 42105,
+          "x": 971,
+          "y": 229
+        },
+        {
+          "frame": 42106,
+          "x": 978,
+          "y": 222
+        },
+        {
+          "frame": 42107,
+          "x": 982,
+          "y": 216
+        },
+        {
+          "frame": 42108,
+          "x": 986,
+          "y": 207
+        },
+        {
+          "frame": 42109,
+          "x": 991,
+          "y": 202
+        },
+        {
+          "frame": 42110,
+          "x": 996,
+          "y": 197
+        },
+        {
+          "frame": 42111,
+          "x": 1002,
+          "y": 193
+        },
+        {
+          "frame": 42112,
+          "x": 1007,
+          "y": 191
+        },
+        {
+          "frame": 42113,
+          "x": 1012,
+          "y": 189
+        },
+        {
+          "frame": 42114,
+          "x": 1018,
+          "y": 188
+        },
+        {
+          "frame": 42115,
+          "x": 1023,
+          "y": 189
+        },
+        {
+          "frame": 42116,
+          "x": 1029,
+          "y": 190
+        },
+        {
+          "frame": 42117,
+          "x": 1035,
+          "y": 193
+        },
+        {
+          "frame": 42172,
+          "x": 990,
+          "y": 349
+        },
+        {
+          "frame": 42173,
+          "x": 993,
+          "y": 320
+        },
+        {
+          "frame": 42174,
+          "x": 992,
+          "y": 294
+        },
+        {
+          "frame": 42175,
+          "x": 996,
+          "y": 265
+        },
+        {
+          "frame": 42177,
+          "x": 995,
+          "y": 209
+        },
+        {
+          "frame": 42178,
+          "x": 997,
+          "y": 180
+        }
+      ]
+    }
+  ],
+  "session_info": {
+    "detection_method": "far_angle_zone_based",
+    "model_path": "runs/detect/basketball_yolo11n2/weights/best.pt",
+    "start_time": "2025-11-05T21:50:53.531375"
+  }
+}

@@ -1,0 +1,48 @@
+# Environment
+.env
+
+# Videos (large files)
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# Training data (large datasets)
+Uball-shot-detection/
+create_training_clips.py
+custom_training.py
+process_video.py
+
+# YOLO model files (large)
+*.pt
+runs/
+
+# Detection results (can be regenerated)
+results/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# IDE
+.vscode/
+.idea/
+
+# Screenshots (temporary)
+Screenshot*.png
+
+# JSON detection outputs (large)
+*_detections_*.json
