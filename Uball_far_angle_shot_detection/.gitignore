@@ -46,3 +46,6 @@ Screenshot*.png
 
 # JSON detection outputs (large)
 *_detections_*.json
+*_session.json
+full_game_test_results.json
+near_angle_*.json

@@ -20,13 +20,14 @@ import logging
 class ShotAnalyzer:
     """Analyzes basketball shots from far angle camera perspective"""
 
-    # Far angle specific parameters
-    HOOP_ZONE_WIDTH = 80          # Pixels on each side of hoop center X
-    HOOP_ZONE_VERTICAL = 100      # Vertical zone height around hoop Y
+    # Far angle specific parameters - MAXIMUM COVERAGE PRIORITY
+    HOOP_ZONE_WIDTH = 120         # Very large zone to catch all shots including free throws
+    HOOP_ZONE_VERTICAL = 130      # Very large vertical zone
 
-    # Shot detection thresholds - OPTIMIZED FOR FAR ANGLE ADVANTAGES
-    MIN_FRAMES_IN_ZONE = 5        # Minimum frames to be considered a shot attempt
-    MIN_VERTICAL_MOVEMENT = 60    # Minimum downward pixels for made shot
+    # Shot detection thresholds - MAXIMIZE DETECTION
+    MIN_FRAMES_IN_ZONE = 1        # Even 1 frame counts as shot attempt
+    MIN_VERTICAL_MOVEMENT = 15    # Very low threshold for free throws and flat shots
+    MIN_BALL_HOOP_OVERLAP = 1.0   # Minimum % overlap between ball and hoop bbox
 
     # RIM BOUNCE DETECTION (FAR ANGLE ADVANTAGE #1) - OPTIMIZED
     # Based on actual rim bounce analysis: avg 24 frames, 177px upward, 1.47x up/down ratio
@@ -165,8 +166,8 @@ class ShotAnalyzer:
         return x_in_zone and y_in_zone
 
     def detect_vertical_passage(self, ball_positions: List[Tuple[int, int]],
-                               hoop_y: int) -> Dict:
-        """Detect if ball passed vertically through hoop zone
+                               hoop_y: int, hoop_x: int = None) -> Dict:
+        """Detect if ball passed vertically through hoop zone AND was within horizontal zone
 
         Checks:
         1. Ball starts above hoop (y < hoop_y)
@@ -207,10 +208,53 @@ class ShotAnalyzer:
         total_movement = downward_movement + upward_movement
         consistency = downward_movement / total_movement if total_movement > 0 else 0
 
-        # Check if ball crossed hoop vertically
+        # Check if ball crossed hoop vertically AND was within hoop zone horizontally
         first_y = ball_positions[0][1]
         last_y = ball_positions[-1][1]
-        crossed_vertically = first_y < hoop_y < last_y
+        crossed_y_level = first_y < hoop_y < last_y
+
+        # IMPORTANT: Also check horizontal proximity AND crossing
+        # Ball must CROSS hoop X position (not just approach it)
+        # This prevents false positives from balls passing BESIDE the hoop
+        crossed_vertically = False
+        if crossed_y_level and hoop_x is not None:
+            # Check if ball CROSSED the hoop X position horizontally
+            # (went from one side to the other, within zone width)
+            x_positions = [pos[0] for pos in ball_positions]
+            min_x = min(x_positions)
+            max_x = max(x_positions)
+
+            # Ball must have crossed hoop X (hoop_x must be between min and max)
+            # AND ball must have been close enough (within HOOP_ZONE_WIDTH)
+            crossed_hoop_x = min_x <= hoop_x <= max_x
+            was_close_enough = min(abs(min_x - hoop_x), abs(max_x - hoop_x)) <= self.HOOP_ZONE_WIDTH
+
+            if crossed_hoop_x and was_close_enough:
+                crossed_vertically = True
+        elif crossed_y_level:
+            # If hoop_x not provided, fall back to old behavior
+            crossed_vertically = True
+
+        # PHASE 2 FIX: Enhanced vertical crossing for high-arc shots (3-pointers)
+        # For high-arc shots, ball may start below hoop Y due to perspective in far angle
+        # Check for high-arc pattern: high upward + high downward + passes reasonably close to hoop Y
+        if not crossed_vertically and hoop_x is not None:
+            # High arc shot: >=140px upward AND >=150px downward
+            is_high_arc = upward_movement >= 140 and downward_movement >= 150
+
+            # Check if ball passes reasonably near hoop Y (±50px tolerance for perspective)
+            passes_near_hoop_y = any(abs(pos[1] - hoop_y) <= 50 for pos in ball_positions)
+
+            if is_high_arc and passes_near_hoop_y:
+                # Also verify horizontal proximity
+                x_positions = [pos[0] for pos in ball_positions]
+                min_x = min(x_positions)
+                max_x = max(x_positions)
+                crossed_hoop_x = min_x <= hoop_x <= max_x
+                was_close_enough = min(abs(min_x - hoop_x), abs(max_x - hoop_x)) <= self.HOOP_ZONE_WIDTH
+
+                if crossed_hoop_x and was_close_enough:
+                    crossed_vertically = True
 
         # Passed through if crossed vertically with sufficient downward movement
         passed_through = (
@@ -227,16 +271,145 @@ class ShotAnalyzer:
             'crossed_vertically': crossed_vertically
         }
 
+    def detect_horizontal_rim_bounce(self, ball_positions: List, hoop_x: int) -> bool:
+        """Detect if ball bounced off rim/backboard horizontally
+
+        BALANCED FIX: Made STRICTER to avoid false positives on clean swishes.
+        Only flags OBVIOUS horizontal bounces with large movement.
+
+        Args:
+            ball_positions: List of (x, y) ball positions
+            hoop_x: Hoop center X coordinate
+
+        Returns:
+            True if horizontal rim bounce detected
+        """
+        if len(ball_positions) < 5:
+            return False
+
+        x_positions = [pos[0] for pos in ball_positions]
+
+        # Calculate total horizontal range
+        max_x = max(x_positions)
+        min_x = min(x_positions)
+        x_range = max_x - min_x
+
+        # STRICTER: Only flag if VERY large range (>120px)
+        # Clean swishes can have 50-80px horizontal movement
+        if x_range > 120:
+            return True
+
+        # Count SIGNIFICANT direction changes (>15px moves, not 10px)
+        # Require MORE changes (>5, not 3) to be confident it's a bounce
+        direction_changes = 0
+        for i in range(2, len(x_positions)):
+            prev_direction = x_positions[i-1] - x_positions[i-2]
+            curr_direction = x_positions[i] - x_positions[i-1]
+
+            # Much stricter: >15px changes
+            if prev_direction * curr_direction < 0 and abs(curr_direction) > 15:
+                direction_changes += 1
+
+        # Require more than 5 significant direction changes
+        if direction_changes > 5:
+            return True
+
+        return False
+
+    def _calculate_bbox_overlap(self, ball_bbox, hoop_bbox):
+        """Calculate overlap percentage between ball and hoop bounding boxes
+
+        Args:
+            ball_bbox: (x1, y1, x2, y2) ball bounding box
+            hoop_bbox: (x1, y1, x2, y2) hoop bounding box
+
+        Returns:
+            float: Percentage of ball bbox that overlaps with hoop bbox
+        """
+        ball_x1, ball_y1, ball_x2, ball_y2 = ball_bbox
+        hoop_x1, hoop_y1, hoop_x2, hoop_y2 = hoop_bbox
+
+        # Calculate overlap area
+        x_overlap = max(0, min(ball_x2, hoop_x2) - max(ball_x1, hoop_x1))
+        y_overlap = max(0, min(ball_y2, hoop_y2) - max(ball_y1, hoop_y1))
+        overlap_area = x_overlap * y_overlap
+
+        # Calculate ball area
+        ball_area = (ball_x2 - ball_x1) * (ball_y2 - ball_y1)
+
+        if ball_area == 0:
+            return 0.0
+
+        overlap_percentage = (overlap_area / ball_area) * 100
+        return overlap_percentage
+
+    def _validate_shot_entry_direction(self, trajectory):
+        """Validate that ball approaches hoop from above or side, not from below
+
+        This eliminates rebounds being counted as shots
+
+        Args:
+            trajectory: List of (x, y) ball positions
+
+        Returns:
+            bool: True if valid shot approach
+        """
+        if len(trajectory) < 2:
+            return False
+
+        first_point = trajectory[0]
+        hoop_y = self.hoop_bbox[1] if self.hoop_bbox else self.hoop_position[1]
+
+        # Ball must start above the hoop (at least 50px above)
+        # This ensures we're tracking a shot coming down, not a rebound going up
+        if first_point[1] < hoop_y - 50:
+            return True
+
+        return False
+
+    def _line_crosses_hoop_vertically(self, p1, p2, hoop_box):
+        """Check if line segment from p1 to p2 crosses through hoop box vertically
+
+        Args:
+            p1: (x, y) start point
+            p2: (x, y) end point
+            hoop_box: (x1, y1, x2, y2) hoop bounding box
+
+        Returns:
+            bool: True if line crosses hoop box from top to bottom
+        """
+        x1, y1 = p1
+        x2, y2 = p2
+        hoop_x1, hoop_y1, hoop_x2, hoop_y2 = hoop_box
+
+        # Check if line segment goes downward (y2 > y1)
+        if y2 <= y1:
+            return False
+
+        # Check if both points' X coordinates are within or crossing the hoop X bounds
+        x_min = min(x1, x2)
+        x_max = max(x1, x2)
+
+        # Line must horizontally overlap with hoop box
+        if x_max < hoop_x1 or x_min > hoop_x2:
+            return False
+
+        # Check if line crosses through the hoop Y bounds (top to bottom)
+        # Line should enter from above (y1 <= hoop_y2) and exit below (y2 >= hoop_y1)
+        crosses_top = y1 <= hoop_y2
+        crosses_bottom = y2 >= hoop_y1
+
+        return crosses_top and crosses_bottom
+
     def classify_shot(self, shot_sequence: Dict) -> Dict:
-        """Classify shot as MADE or MISSED - FOCUSED ON FAR ANGLE ADVANTAGES
+        """Classify shot as MADE or MISSED - LINE INTERSECTION LOGIC
 
-        FAR ANGLE ADVANTAGE #1 - Rim Bounce Detection:
-          Ball bouncing on rim then dropping = MISSED
-          (Near angle struggles with this)
-
-        FAR ANGLE ADVANTAGE #2 - Clean Swish Detection:
-          Ball going straight through without touching = MADE
-          (Near angle sometimes misses these)
+        Improved approach:
+        1. Check if trajectory LINE passes through the hoop bounding box vertically
+        2. Count line segments that cross through the hoop (minimum 1 for swish)
+        3. Count frames where ball is inside hoop box
+        4. Combine both metrics for confidence
+        5. If trajectory crosses through hoop downward → MADE, else → MISSED
 
         Args:
             shot_sequence: Dictionary containing shot data
@@ -245,75 +418,207 @@ class ShotAnalyzer:
             Classification results
         """
         ball_positions = shot_sequence['ball_positions']
+        ball_sizes = shot_sequence.get('ball_sizes', [])  # Ball bbox areas for depth check
+        hoop_x = shot_sequence['hoop_position'][0]
         hoop_y = shot_sequence['hoop_position'][1]
         frames_in_zone = len(shot_sequence['frames_in_zone'])
 
-        # Analyze vertical passage
-        passage_analysis = self.detect_vertical_passage(ball_positions, hoop_y)
+        # Calculate average ball size for depth estimation
+        avg_ball_size = sum(ball_sizes) / len(ball_sizes) if ball_sizes else 0
 
-        downward = passage_analysis['downward_movement']
-        upward = passage_analysis['upward_movement']
-        consistency = passage_analysis['consistency']
-        crossed_vertically = passage_analysis['crossed_vertically']
+        # Get hoop bounding box (using stored hoop_bbox if available)
+        if self.hoop_bbox is not None:
+            hoop_x1, hoop_y1, hoop_x2, hoop_y2 = self.hoop_bbox
+        else:
+            # Fallback: estimate hoop box from center (assume ~60px width/height)
+            hoop_x1 = hoop_x - 30
+            hoop_x2 = hoop_x + 30
+            hoop_y1 = hoop_y - 30
+            hoop_y2 = hoop_y + 30
 
-        # === OPTIMIZED DECISION LOGIC - RIM BOUNCE FIRST ===
+        hoop_box = (hoop_x1, hoop_y1, hoop_x2, hoop_y2)
+
+        # Calculate vertical movement metrics first (needed for all checks)
+        downward = 0
+        upward = 0
+        for i in range(1, len(ball_positions)):
+            y_diff = ball_positions[i][1] - ball_positions[i-1][1]
+            if y_diff > 0:
+                downward += y_diff
+            else:
+                upward += abs(y_diff)
+
+        total_movement = downward + upward
+        consistency = downward / total_movement if total_movement > 0 else 0
+
+        # Calculate NET vertical displacement (final Y - start Y)
+        # Positive = ball went down (MADE), Negative = ball bounced back up (MISSED)
+        if len(ball_positions) >= 2:
+            start_y = ball_positions[0][1]
+            end_y = ball_positions[-1][1]
+            net_vertical_displacement = end_y - start_y  # Positive = down, Negative = up
+        else:
+            net_vertical_displacement = 0
 
         # Rule 1: Too few frames - not a real shot attempt
         if frames_in_zone < self.MIN_FRAMES_IN_ZONE:
             outcome = 'missed'
             reason = f'insufficient_frames ({frames_in_zone})'
             confidence = 0.6
+            points_inside = 0
+            total_points = len(ball_positions)
+            line_crossings = 0
+            percentage_inside = 0.0
 
-        # Rule 2: Insufficient downward movement - didn't go through
-        elif downward < self.MIN_VERTICAL_MOVEMENT:
-            outcome = 'missed'
-            reason = f'insufficient_downward ({downward:.0f}px)'
-            confidence = 0.75
+        # REMOVED: Don't check MIN_VERTICAL_MOVEMENT - free throws can be very flat
+        # Proceed to trajectory analysis for all shots with enough frames
 
-        # ===== FAR ANGLE ADVANTAGE #1: RIM BOUNCE DETECTION (PRIORITY) =====
-        # Optimized based on analysis: avg 24 frames, 177px upward, 1.47x ratio
-        # Check BEFORE vertical crossing to catch rim bounces that near angle misses
-        elif frames_in_zone >= self.RIM_BOUNCE_MIN_FRAMES and upward >= self.RIM_BOUNCE_UPWARD_MIN:
-            outcome = 'missed'
-            reason = f'rim_bounce_frames (frames:{frames_in_zone}, up:{upward:.0f}px)'
-            confidence = 0.95
-
-        # NEW: Rim bounce by Up/Down ratio - even if fewer frames
-        elif downward > 0 and upward / downward > self.RIM_BOUNCE_RATIO:
-            outcome = 'missed'
-            reason = f'rim_bounce_ratio (up:{upward:.0f}px > down:{downward:.0f}px, ratio:{upward/downward:.2f})'
-            confidence = 0.90
-
-        # Rule 3: Didn't cross hoop vertically (after rim bounce checks)
-        elif not crossed_vertically:
-            outcome = 'missed'
-            reason = 'no_vertical_crossing'
-            confidence = 0.75
-
-        # ===== FAR ANGLE ADVANTAGE #2: CLEAN SWISH DETECTION =====
-        # Clean make - minimal upward, smooth trajectory - MADE
-        elif upward <= self.SWISH_MAX_UPWARD and consistency >= self.SWISH_MIN_CONSISTENCY:
-            outcome = 'made'
-            reason = f'clean_swish (up:{upward:.0f}px, cons:{consistency:.2f})'
-            confidence = 0.95
-
-        # Rule 6: General made shot - good consistency, crossed vertically
-        elif consistency >= self.MIN_CONSISTENCY and crossed_vertically:
-            outcome = 'made'
-            reason = f'made_shot (cons:{consistency:.2f})'
-            confidence = min(0.85, 0.7 + consistency * 0.2)
-
-        # Rule 7: High upward movement - likely rim bounce or miss
-        elif upward > downward * 0.6:
-            outcome = 'missed'
-            reason = f'high_upward (up:{upward:.0f}px vs down:{downward:.0f}px)'
-            confidence = 0.80
-
-        # Default: Insufficient consistency or unclear pattern
         else:
-            outcome = 'missed'
-            reason = f'low_consistency ({consistency:.2f})'
-            confidence = 0.70
+            # Metric 1: Count trajectory LINE SEGMENTS that cross through hoop box
+            line_crossings = 0
+            total_segments = 0
+
+            for i in range(1, len(ball_positions)):
+                p1 = ball_positions[i-1]
+                p2 = ball_positions[i]
+                total_segments += 1
+
+                if self._line_crosses_hoop_vertically(p1, p2, hoop_box):
+                    line_crossings += 1
+
+            # Metric 2: Count tracking points inside hoop bounding box WITH DEPTH CHECK
+            points_inside = 0
+            points_inside_with_depth = 0  # Points inside at correct depth
+            total_points = len(ball_positions)
+
+            # Track ball size stats for debugging
+            inside_ball_sizes = []
+            outside_ball_sizes = []
+
+            for i, ball_center in enumerate(ball_positions):
+                ball_x, ball_y = ball_center
+                is_inside = hoop_x1 <= ball_x <= hoop_x2 and hoop_y1 <= ball_y <= hoop_y2
+
+                if is_inside:
+                    points_inside += 1
+                    if ball_sizes and i < len(ball_sizes):
+                        inside_ball_sizes.append(ball_sizes[i])
+
+                    # Depth check: if ball is larger than average, it's IN FRONT of hoop
+                    if ball_sizes and i < len(ball_sizes):
+                        ball_size = ball_sizes[i]
+                        # Ball should be similar or smaller size when passing through hoop
+                        # If >20% larger (tightened from 30%), it's likely in front of hoop
+                        if avg_ball_size > 0 and ball_size <= avg_ball_size * 1.2:
+                            points_inside_with_depth += 1
+                else:
+                    if ball_sizes and i < len(ball_sizes):
+                        outside_ball_sizes.append(ball_sizes[i])
+
+            # Calculate percentages
+            percentage_inside = (points_inside / total_points * 100) if total_points > 0 else 0
+
+            # Additional depth metric: compare average ball size inside vs outside
+            avg_inside_size = sum(inside_ball_sizes) / len(inside_ball_sizes) if inside_ball_sizes else 0
+            avg_outside_size = sum(outside_ball_sizes) / len(outside_ball_sizes) if outside_ball_sizes else 0
+
+            # If ball is larger INSIDE than OUTSIDE, it's passing IN FRONT
+            ball_size_ratio_inside_outside = avg_inside_size / avg_outside_size if avg_outside_size > 0 else 1.0
+
+            # Decision Logic: Check for EXTREME bounces first, then made indicators
+
+            # Calculate upward/downward ratio
+            up_down_ratio = upward / downward if downward > 0 else 0
+
+            # Rule 1: EXTREME upward movement = MISSED (hard bounce out)
+            # Increased threshold to 300px - made shots can have 250-290px bounce
+            if upward > 300:
+                outcome = 'missed'
+                reason = f'extreme_rim_bounce ({upward:.0f}px upward, bounced out hard)'
+                confidence = 0.95
+
+            # Rule 2: High up/down ratio = MISSED (bounced back out)
+            # Made shots go DOWN more than UP, but allow some tolerance
+            # With depth check, we can relax this slightly to 1.15
+            elif upward > 100 and up_down_ratio > 1.15:
+                outcome = 'missed'
+                reason = f'rim_bounce_out ({upward:.0f}px upward, {up_down_ratio:.2f} ratio, bounced back out)'
+                confidence = 0.90
+
+            # Rule 3: Line crosses through hoop = MADE
+            # Relaxed net_disp check: only reject EXTREME negative displacement (ball way back up)
+            # Allow -50 to +∞ because tracking window is limited
+            elif (line_crossings >= 2 or (line_crossings >= 1 and points_inside_with_depth >= 2)) and net_vertical_displacement > -50:
+                outcome = 'made'
+                reason = f'trajectory_through_hoop ({line_crossings} line crossings, {points_inside_with_depth} points inside at depth'
+                if upward > 100:
+                    reason += f', {upward:.0f}px rim bounce'
+                reason += ')'
+
+                # Confidence based on both metrics:
+                # - Base: 0.75 for strong made indicators
+                # - Bonus: +0.05 per additional crossing (up to 3)
+                # - Bonus: +0.10 if 3+ points inside at depth
+                confidence = 0.75
+                confidence += min(0.10, (line_crossings - 1) * 0.05)
+                if points_inside_with_depth >= 3:
+                    confidence += 0.10
+                confidence = min(0.95, confidence)
+
+            # Rule 3x: Line crosses and points inside BUT ball bounced WAY back up
+            # Only reject if ball ended MUCH higher (>50px up) = clear rim bounce out
+            elif (line_crossings >= 1 and points_inside >= 2) and net_vertical_displacement <= -50:
+                outcome = 'missed'
+                reason = f'rim_bounce_back_out ({line_crossings} crossings, but ball bounced way back up, net_disp={net_vertical_displacement:.0f}px)'
+                confidence = 0.85
+
+            # Rule 3b: Ball larger INSIDE than OUTSIDE = passing IN FRONT of hoop
+            # If ball is 10%+ larger when "inside" hoop bbox, it's actually in front (closer to camera)
+            elif line_crossings >= 1 and points_inside >= 2 and ball_size_ratio_inside_outside > 1.1:
+                outcome = 'missed'
+                reason = f'ball_in_front_of_hoop ({line_crossings} crossings, but ball {ball_size_ratio_inside_outside:.2f}x larger inside vs outside)'
+                confidence = 0.90
+
+            # Rule 3c: Line crosses but points inside are at wrong depth (in front of hoop)
+            # Ball passed through 2D hoop bbox but was actually in front
+            elif line_crossings >= 1 and points_inside >= 2 and points_inside_with_depth < 2:
+                outcome = 'missed'
+                reason = f'ball_in_front_of_hoop ({line_crossings} crossings, {points_inside} points but only {points_inside_with_depth} at correct depth)'
+                confidence = 0.85
+
+            # Rule 4: Line crosses but ball barely inside hoop
+            # With 2+ crossings and 1 point, likely a made shot (fast swish)
+            # With 1 crossing and 1 point, could be grazed
+            elif line_crossings == 1 and points_inside == 1:
+                outcome = 'missed'
+                reason = f'trajectory_grazed_hoop ({line_crossings} crossing, only {points_inside} point inside)'
+                confidence = 0.70
+
+            # Rule 5: Detect strong rim bounce with NO trajectory through hoop = missed
+            elif upward > 150 and line_crossings == 0:
+                outcome = 'missed'
+                reason = f'rim_bounce_detected ({upward:.0f}px upward movement, no line crossings)'
+                confidence = 0.90
+
+            # Rule 6: Detect light rim contact (small upward movement = likely missed)
+            elif upward > 20 and points_inside < 2 and line_crossings == 0:
+                outcome = 'missed'
+                reason = f'rim_contact_detected ({upward:.0f}px upward, {points_inside} points inside)'
+                confidence = 0.80
+
+            # Rule 7: No line crossings = clearly missed
+            else:
+                outcome = 'missed'
+                reason = f'trajectory_beside_hoop ({line_crossings} line crossings, {percentage_inside:.1f}% inside)'
+
+                # High confidence miss if no crossings
+                confidence = 0.85
+                # Reduce confidence if some points inside (might be close)
+                if points_inside > 0:
+                    confidence = max(0.70, 0.85 - (points_inside * 0.03))
+
+        # Set crossed_vertically flag
+        crossed_vertically = line_crossings > 0 if 'line_crossings' in locals() else False
 
         return {
             'outcome': outcome,
@@ -323,7 +628,11 @@ class ShotAnalyzer:
             'vertical_passage': crossed_vertically,
             'downward_movement': downward,
             'upward_movement': upward,
-            'trajectory_consistency': consistency
+            'trajectory_consistency': consistency,
+            'points_inside_hoop_box': points_inside,
+            'total_trajectory_points': total_points,
+            'percentage_inside_hoop': percentage_inside,
+            'line_crossings_through_hoop': line_crossings
         }
 
     def update_shot_tracking(self, detections: Dict):
@@ -335,11 +644,13 @@ class ShotAnalyzer:
         ball = detections.get('ball')
         hoop = detections.get('hoop')
 
-        # Update trajectory
+        # Update trajectory with ball size for depth estimation
         if ball is not None:
             self.ball_trajectory.append({
                 'frame': self.frame_count,
                 'position': ball['center'],
+                'bbox': ball['bbox'],
+                'ball_size': ball['width'] * ball['height'],  # Ball area for depth check
                 'in_zone': False
             })
 
@@ -361,6 +672,7 @@ class ShotAnalyzer:
                         'start_frame': self.frame_count,
                         'frames_in_zone': [self.frame_count],
                         'ball_positions': [ball_center],
+                        'ball_sizes': [ball['width'] * ball['height']],  # Track ball area for depth
                         'hoop_position': hoop_center,
                         'last_frame_in_zone': self.frame_count
                     }
@@ -368,6 +680,7 @@ class ShotAnalyzer:
                     # Continue existing sequence
                     self.current_shot_sequence['frames_in_zone'].append(self.frame_count)
                     self.current_shot_sequence['ball_positions'].append(ball_center)
+                    self.current_shot_sequence['ball_sizes'].append(ball['width'] * ball['height'])
                     self.current_shot_sequence['last_frame_in_zone'] = self.frame_count
 
                 self.frames_since_last_shot = 0

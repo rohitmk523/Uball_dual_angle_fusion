@@ -522,6 +522,7 @@ def main():
     parser.add_argument('--detection_json', required=True, help='Path to detection results JSON')
     parser.add_argument('--video_path', help='Path to original video file')
     parser.add_argument('--processed_video', help='Path to processed video file')
+    parser.add_argument('--angle', help='Camera angle filter (e.g., RIGHT, LEFT)')
     parser.add_argument('--start_time', help='Start time for validation (HH:MM:SS or MM:SS or SS)')
     parser.add_argument('--end_time', help='End time for validation (HH:MM:SS or MM:SS or SS)')
 
@@ -549,7 +550,8 @@ def main():
         video_path=args.video_path,
         processed_video_path=args.processed_video,
         start_seconds=start_seconds,
-        end_seconds=end_seconds
+        end_seconds=end_seconds,
+        angle=args.angle
     )
 
     if result.get('success'):
