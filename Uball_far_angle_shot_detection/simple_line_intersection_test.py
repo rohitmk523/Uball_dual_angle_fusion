@@ -26,16 +26,16 @@ import argparse
 class SimplifiedShotAnalyzer:
     """Simplified shot analyzer using line intersection logic"""
 
-    # Zone parameters (keep same as original)
-    HOOP_ZONE_WIDTH = 120
-    HOOP_ZONE_VERTICAL = 130
-    MIN_FRAMES_IN_ZONE = 1
+    # Zone parameters - TIGHTENED to reduce false positives
+    # Previous: 120x130, now 80x100 (33% smaller) to focus on actual shot attempts
+    HOOP_ZONE_WIDTH = 80        # Reduced from 120 (33% reduction)
+    HOOP_ZONE_VERTICAL = 100    # Reduced from 130 (23% reduction)
+    MIN_FRAMES_IN_ZONE = 5      # Increased from 1 to filter quick passes/rebounds
 
-    # NEW: Ball-to-hoop size ratio thresholds
-    # When ball is at hoop depth, ball should be similar size to hoop
-    # Based on testing: made shots show ratios around 0.19-0.25
-    MIN_BALL_HOOP_RATIO = 0.12  # Ball too small compared to hoop = too far
-    MAX_BALL_HOOP_RATIO = 0.30  # Ball too large compared to hoop = in front of hoop
+    # Ball-to-hoop size ratio thresholds - REFINED based on data analysis
+    # Analysis showed: Made shots avg=0.231 (0.165-0.340), Missed avg=0.391 (0.324-0.490)
+    MIN_BALL_HOOP_RATIO = 0.16  # Raised from 0.12 based on actual made shot minimum
+    MAX_BALL_HOOP_RATIO = 0.34  # Raised from 0.30 based on actual made shot maximum
 
     # Confidence thresholds
     BASKETBALL_CONFIDENCE = 0.35
@@ -206,6 +206,9 @@ class SimplifiedShotAnalyzer:
         valid_bottom_crossings = 0  # Bottom crossings with correct depth
         size_ratios = []
 
+        # Track first bottom crossing index to check for bounce back
+        first_bottom_crossing_idx = None
+
         for i in range(1, len(ball_positions)):
             prev_center = ball_positions[i-1]
             curr_center = ball_positions[i]
@@ -229,6 +232,10 @@ class SimplifiedShotAnalyzer:
             if crossing_info['crosses_bottom']:
                 crosses_bottom_count += 1
 
+                # Track first bottom crossing for bounce detection
+                if first_bottom_crossing_idx is None:
+                    first_bottom_crossing_idx = i
+
                 # Valid bottom crossing: correct size ratio
                 if i < len(ball_sizes) and hoop_size > 0:
                     ball_size = ball_sizes[i]
@@ -241,20 +248,49 @@ class SimplifiedShotAnalyzer:
         avg_size_ratio = sum(size_ratios) / len(size_ratios) if size_ratios else 0
         total_points = len(ball_positions)
 
+        # DETECT RIM BOUNCE OUT: Check for upward movement after bottom crossing
+        bounced_back_out = False
+        bounce_upward = 0
+
+        if valid_bottom_crossings >= 1 and first_bottom_crossing_idx is not None:
+            # Check movement after first bottom crossing
+            if first_bottom_crossing_idx < len(ball_positions) - 1:
+                bottom_y = ball_positions[first_bottom_crossing_idx][1]
+
+                # Check if ball moved significantly upward after crossing bottom
+                for j in range(first_bottom_crossing_idx + 1, len(ball_positions)):
+                    current_y = ball_positions[j][1]
+                    upward_movement = bottom_y - current_y  # Negative Y = upward
+
+                    if upward_movement > bounce_upward:
+                        bounce_upward = upward_movement
+
+                # If ball moved up 30+ pixels after crossing bottom → bounced out
+                # (in-and-out or rim roll out)
+                if bounce_upward > 30:
+                    bounced_back_out = True
+
         # DECISION LOGIC:
         # 1. Must cross TOP boundary while moving DOWN with correct depth → entering hoop
         # 2. If ALSO crosses BOTTOM boundary → went through completely → higher confidence
+        # 3. NEW: Check for rim bounce out (ball went through but bounced back up)
 
         if valid_top_crossings >= 1:
-            outcome = 'made'
-
-            # Check if also crossed bottom (complete pass-through)
-            if valid_bottom_crossings >= 1:
-                reason = f'complete_pass_through (top={valid_top_crossings}, bottom={valid_bottom_crossings}, ratio={avg_size_ratio:.3f})'
-                confidence = 0.95  # Very high confidence - entered and exited
+            # Check for rim bounce out FIRST (overrides made decision)
+            if bounced_back_out:
+                outcome = 'missed'
+                reason = f'rim_bounce_out (passed through but bounced back up {bounce_upward:.0f}px, in-and-out)'
+                confidence = 0.90
             else:
-                reason = f'entered_from_top (top={valid_top_crossings}, ratio={avg_size_ratio:.3f})'
-                confidence = 0.80  # Good confidence - entered from top moving down
+                outcome = 'made'
+
+                # Check if also crossed bottom (complete pass-through)
+                if valid_bottom_crossings >= 1:
+                    reason = f'complete_pass_through (top={valid_top_crossings}, bottom={valid_bottom_crossings}, ratio={avg_size_ratio:.3f})'
+                    confidence = 0.95  # Very high confidence - entered and exited
+                else:
+                    reason = f'entered_from_top (top={valid_top_crossings}, ratio={avg_size_ratio:.3f})'
+                    confidence = 0.80  # Good confidence - entered from top moving down
         else:
             # No valid top crossings
             if crosses_top_count >= 1:
@@ -276,7 +312,9 @@ class SimplifiedShotAnalyzer:
             'crosses_top_count': crosses_top_count,
             'crosses_bottom_count': crosses_bottom_count,
             'avg_size_ratio': avg_size_ratio,
-            'total_trajectory_points': total_points
+            'total_trajectory_points': total_points,
+            'bounced_back_out': bounced_back_out,
+            'bounce_upward_pixels': bounce_upward
         }
 
     def update_shot_tracking(self, detections: Dict):
@@ -366,7 +404,9 @@ class SimplifiedShotAnalyzer:
                 'confidence': classification['decision_confidence'],
                 'valid_top_crossings': classification['valid_top_crossings'],
                 'valid_bottom_crossings': classification['valid_bottom_crossings'],
-                'avg_size_ratio': classification['avg_size_ratio']
+                'avg_size_ratio': classification['avg_size_ratio'],
+                'bounced_back_out': classification['bounced_back_out'],
+                'bounce_upward_pixels': classification['bounce_upward_pixels']
             }
 
             self.detected_shots.append(shot)
