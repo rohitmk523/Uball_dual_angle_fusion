@@ -26,16 +26,17 @@ import argparse
 class SimplifiedShotAnalyzer:
     """Simplified shot analyzer using line intersection logic"""
 
-    # Zone parameters - TIGHTENED to reduce false positives
-    # Previous: 120x130, now 80x100 (33% smaller) to focus on actual shot attempts
-    HOOP_ZONE_WIDTH = 80        # Reduced from 120 (33% reduction)
-    HOOP_ZONE_VERTICAL = 100    # Reduced from 130 (23% reduction)
-    MIN_FRAMES_IN_ZONE = 5      # Increased from 1 to filter quick passes/rebounds
+    # Zone parameters - BALANCED for multiple games (V4)
+    # V3 (80x100, min 5) worked great for Game 1 (84.3%) but poor for Game 2 (62.7%)
+    # V4 loosens slightly to work across different camera angles
+    HOOP_ZONE_WIDTH = 100       # Middle ground between 80 and 120
+    HOOP_ZONE_VERTICAL = 115    # Middle ground between 100 and 130
+    MIN_FRAMES_IN_ZONE = 3      # Middle ground between 1 and 5
 
     # Ball-to-hoop size ratio thresholds - REFINED based on data analysis
     # Analysis showed: Made shots avg=0.231 (0.165-0.340), Missed avg=0.391 (0.324-0.490)
-    MIN_BALL_HOOP_RATIO = 0.16  # Raised from 0.12 based on actual made shot minimum
-    MAX_BALL_HOOP_RATIO = 0.34  # Raised from 0.30 based on actual made shot maximum
+    MIN_BALL_HOOP_RATIO = 0.16  # Based on actual made shot minimum
+    MAX_BALL_HOOP_RATIO = 0.34  # Based on actual made shot maximum
 
     # Confidence thresholds
     BASKETBALL_CONFIDENCE = 0.35
