@@ -64,3 +64,6 @@ env/
 # Environment variables
 .env
 .env.local
+
+*.mp4
+*.json
