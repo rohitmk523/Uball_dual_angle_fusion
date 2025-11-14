@@ -33,11 +33,11 @@ class SimplifiedShotAnalyzer:
     HOOP_ZONE_VERTICAL = 95     # TIGHTENED from 115 (even stricter than V3's 100)
     MIN_FRAMES_IN_ZONE = 8      # INCREASED from 3 (eliminate quick passes/dribbles)
 
-    # Ball-to-hoop size ratio thresholds - V6: RELAXED to capture far-distance shots
-    # V4 Analysis: 22 false negatives with ratios 0.28-0.47 (ball farther from camera)
-    # V6: Relaxed upper bound to fix 40.7% of errors (size ratio too strict)
-    MIN_BALL_HOOP_RATIO = 0.17  # Keep strict lower bound (foreground rejection)
-    MAX_BALL_HOOP_RATIO = 0.40  # V6: INCREASED from 0.28 (fixes far-shot false negatives)
+    # Ball-to-hoop size ratio thresholds - STRICTER to ensure ball is at hoop depth
+    # Analysis showed: Made shots avg=0.231 (0.165-0.340), Missed avg=0.391 (0.324-0.490)
+    # V5: Further tightened to reduce false positives
+    MIN_BALL_HOOP_RATIO = 0.18  # STRICTER from 0.17
+    MAX_BALL_HOOP_RATIO = 0.28  # STRICTER from 0.30
 
     # Confidence thresholds
     BASKETBALL_CONFIDENCE = 0.35
@@ -125,7 +125,7 @@ class SimplifiedShotAnalyzer:
     def _check_line_crosses_hoop_boundary(self, ball_center: Tuple[int, int], prev_ball_center: Tuple[int, int],
                                           hoop_bbox: Tuple[int, int, int, int]) -> Dict:
         """
-        V6: Enhanced boundary crossing detection with interpolation for fast-moving balls
+        Check if ball's vertical line crosses hoop boundaries and track which boundary
 
         Args:
             ball_center: (x, y) current ball center
@@ -151,26 +151,13 @@ class SimplifiedShotAnalyzer:
         # Check if ball is moving downward
         moving_down = ball_y > prev_y
 
-        # Frame-by-frame crossing detection (original logic)
+        # Check if ball crosses TOP boundary of hoop (entering from above)
+        # Ball crosses top if: previous Y was above top, current Y is at/below top
         crosses_top = prev_y < hoop_y1 and ball_y >= hoop_y1 and inside_horizontally
+
+        # Check if ball crosses BOTTOM boundary of hoop (exiting through bottom)
+        # Ball crosses bottom if: previous Y was above bottom, current Y is at/below bottom
         crosses_bottom = prev_y < hoop_y2 and ball_y >= hoop_y2 and inside_horizontally
-
-        # V6: INTERPOLATION for fast-moving balls (fixes 10 "no_top_crossing" false negatives)
-        # If ball moved more than hoop height in one frame, it likely passed through between frames
-        vertical_distance = abs(ball_y - prev_y)
-        hoop_height = hoop_y2 - hoop_y1
-
-        if vertical_distance > hoop_height and inside_horizontally and moving_down:
-            # Ball moved fast enough to skip entire hoop in single frame
-            # Interpolate the path to detect missed crossings
-
-            # Check if interpolated path crosses top boundary
-            if prev_y < hoop_y1 and ball_y > hoop_y1:
-                crosses_top = True
-
-            # Check if interpolated path crosses bottom boundary
-            if prev_y < hoop_y2 and ball_y > hoop_y2:
-                crosses_bottom = True
 
         return {
             'crosses': crosses_top or crosses_bottom,
@@ -340,10 +327,10 @@ class SimplifiedShotAnalyzer:
                     if upward_movement > bounce_upward:
                         bounce_upward = upward_movement
 
-                # If ball moved up 30+ pixels after crossing bottom → bounced out
-                # V6: DECREASED from 50px - more sensitive rim bounce detection
-                # Fixes 7 false positives (complete_pass_through that were rim bounces)
-                if bounce_upward > 30:
+                # If ball moved up 50+ pixels after crossing bottom → bounced out
+                # V2: Increased from 30px - stricter rim bounce detection
+                # (in-and-out or rim roll out)
+                if bounce_upward > 50:
                     bounced_back_out = True
 
         # DECISION LOGIC:
@@ -359,20 +346,17 @@ class SimplifiedShotAnalyzer:
                 reason = f'rim_bounce_out (passed through but bounced back up {bounce_upward:.0f}px, in-and-out)'
                 confidence = 0.90
             else:
-                # V6: CRITICAL FIX - Require BOTH top and bottom crossings for MADE
-                # Ball entering from top but NOT exiting bottom = rim bounce/air ball, NOT a make
-                # This fixes 12 false positives (22.2% of all errors)
+                outcome = 'made'
+
+                # Check if also crossed bottom (complete pass-through)
                 if valid_bottom_crossings >= 1:
-                    # Complete pass-through: entered top AND exited bottom
-                    outcome = 'made'
                     reason = f'complete_pass_through (top={valid_top_crossings}, bottom={valid_bottom_crossings}, ratio={avg_size_ratio:.3f})'
                     confidence = 0.95  # Very high confidence - entered and exited
                 else:
-                    # V6: Incomplete pass - entered from top but didn't exit bottom
-                    # This is likely a rim bounce, blocked shot, or air ball → MISSED
-                    outcome = 'missed'
-                    reason = f'incomplete_pass (entered top but no bottom exit, top={valid_top_crossings}, ratio={avg_size_ratio:.3f})'
-                    confidence = 0.80
+                    # V2: For "entered_from_top" cases without bottom crossing,
+                    # reduce confidence slightly to be more conservative
+                    reason = f'entered_from_top (top={valid_top_crossings}, ratio={avg_size_ratio:.3f})'
+                    confidence = 0.75  # REDUCED from 0.80 - more conservative without bottom confirmation
         else:
             # No valid top crossings
             if crosses_top_count >= 1:

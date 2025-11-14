@@ -9,12 +9,13 @@ and classify shots using zone-based tracking and vertical passage detection.
 import argparse
 import cv2
 import logging
+import json
 from pathlib import Path
 from datetime import datetime
 from typing import Optional
 import sys
 
-from shot_detection import ShotAnalyzer
+from simple_line_intersection_test import SimplifiedShotAnalyzer
 from accuracy_validator import AccuracyValidator
 
 
@@ -68,8 +69,8 @@ def process_video(
     logger.info(f"Processing video: {video_path}")
     logger.info(f"Using model: {model_path}")
 
-    # Initialize shot analyzer
-    analyzer = ShotAnalyzer(str(model_path))
+    # Initialize shot analyzer (far angle line intersection logic)
+    analyzer = SimplifiedShotAnalyzer(str(model_path))
 
     # Open video
     cap = cv2.VideoCapture(str(video_path))
@@ -173,13 +174,26 @@ def process_video(
 
     logger.info(f"Processing complete! Processed {processed_frames} frames")
 
-    # Save session data
-    video_info = {
-        'video_path': str(video_path),
-        'model_path': str(model_path),
-        'start_time': datetime.now().isoformat()
+    # Finalize any pending sequences
+    if analyzer.current_shot_sequence is not None:
+        analyzer._finalize_shot_sequence()
+
+    # Save session data in format expected by accuracy validator
+    session_data = {
+        'session_info': {
+            'start_time': datetime.now().isoformat(),
+            'end_time': datetime.now().isoformat(),
+            'model_path': str(model_path),
+            'video_path': str(video_path)
+        },
+        'statistics': analyzer.stats,
+        'shots': analyzer.detected_shots
     }
-    analyzer.save_session_data(str(session_json_path), video_info)
+
+    with open(session_json_path, 'w') as f:
+        json.dump(session_data, f, indent=2)
+
+    logger.info(f"Session data saved: {session_json_path}")
 
     # Prepare results
     results = {

@@ -539,25 +539,25 @@ class ShotAnalyzer:
         """Multi-factor rim bounce detection"""
         if not overlap_frames:
             return False, 0.0
-        
+
         bounce_score = 0.0
         max_score = 5.0
-        
+
         # Factor 1: Upward movement during overlap (strongest indicator)
         if post_hoop_analysis.get('ball_bounces_back', False):
             bounce_score += 2.0
-        
+
         # Factor 2: Low entry angle (ball approaching from side)
         if entry_angle is not None and entry_angle < 35:  # Less than 35° from horizontal
             bounce_score += 1.5
-        
+
         # Factor 3: Low overlap percentage (grazing the rim)
         max_overlap = max(f['overlap_percentage'] for f in overlap_frames)
         if max_overlap < 80:
             bounce_score += 1.0
         elif max_overlap < 95:
             bounce_score += 0.5
-        
+
         # Factor 4: Erratic movement pattern
         if len(overlap_frames) >= 3:
             overlaps = [f['overlap_percentage'] for f in overlap_frames]
@@ -565,12 +565,72 @@ class ShotAnalyzer:
             drops = sum(1 for i in range(len(overlaps)-1) if overlaps[i] - overlaps[i+1] > 30)
             if drops >= 2:
                 bounce_score += 0.5
-        
+
         # Determine if it's a rim bounce
         is_bounce = bounce_score >= 2.5
         confidence = bounce_score / max_score
-        
+
         return is_bounce, confidence
+
+    def extract_spatial_features(self, ball_bbox, hoop_bbox, trajectory):
+        """
+        Extract spatial and trajectory features for fusion
+
+        Args:
+            ball_bbox: [x1, y1, x2, y2] ball bounding box
+            hoop_bbox: [x1, y1, x2, y2] hoop bounding box
+            trajectory: list of ball position dicts with 'ball_position' key
+
+        Returns:
+            dict: Spatial feature dictionary
+        """
+        if not ball_bbox or not hoop_bbox:
+            return {}
+
+        # Calculate centers
+        ball_center = ((ball_bbox[0] + ball_bbox[2]) / 2, (ball_bbox[1] + ball_bbox[3]) / 2)
+        hoop_center = ((hoop_bbox[0] + hoop_bbox[2]) / 2, (hoop_bbox[1] + hoop_bbox[3]) / 2)
+
+        # Calculate relative position
+        horizontal_offset = ball_center[0] - hoop_center[0]
+        vertical_offset = ball_center[1] - hoop_center[1]
+        distance = math.sqrt(horizontal_offset**2 + vertical_offset**2)
+
+        # Calculate ball size
+        ball_width = ball_bbox[2] - ball_bbox[0]
+        ball_height = ball_bbox[3] - ball_bbox[1]
+        ball_size = max(ball_width, ball_height)
+
+        # Calculate movement direction from trajectory
+        lateral_velocity = 0.0
+        ball_moving_left = False
+        ball_moving_right = False
+
+        if trajectory and len(trajectory) >= 2:
+            # Get recent positions (last 5 or all if less)
+            recent_positions = trajectory[-5:] if len(trajectory) >= 5 else trajectory
+
+            if len(recent_positions) >= 2:
+                # Extract x coordinates from ball_position
+                x_coords = [pos['ball_position'][0] for pos in recent_positions]
+
+                # Calculate lateral movement
+                dx = x_coords[-1] - x_coords[0]
+                lateral_velocity = dx / len(recent_positions)
+
+                # Determine direction (threshold of 1.0 pixel per frame)
+                ball_moving_left = lateral_velocity < -1.0
+                ball_moving_right = lateral_velocity > 1.0
+
+        return {
+            "ball_hoop_horizontal_offset": horizontal_offset,
+            "ball_hoop_vertical_offset": vertical_offset,
+            "ball_distance_to_hoop": distance,
+            "ball_moving_left": ball_moving_left,
+            "ball_moving_right": ball_moving_right,
+            "lateral_velocity": lateral_velocity,
+            "ball_size": ball_size,
+        }
 
     def _finalize_shot_sequence(self):
         """Enhanced shot sequence finalization with multi-factor analysis"""
@@ -764,6 +824,31 @@ class ShotAnalyzer:
             
         self.stats['total_shots'] += 1
         
+        # Extract spatial features for fusion
+        # Get ball bbox from max overlap frame
+        ball_bbox = None
+        if max_overlap_data and 'ball_position' in max_overlap_data:
+            # Reconstruct bbox from overlap data (we need to store it properly)
+            # For now, create approximate bbox from position and size_ratio
+            ball_center = max_overlap_data['ball_position']
+            size_ratio = max_overlap_data.get('size_ratio', 0.5)
+            if self.hoop_bbox:
+                hoop_size = max(self.hoop_bbox[2] - self.hoop_bbox[0],
+                              self.hoop_bbox[3] - self.hoop_bbox[1])
+                ball_size = hoop_size * size_ratio / 2
+                ball_bbox = [
+                    int(ball_center[0] - ball_size),
+                    int(ball_center[1] - ball_size),
+                    int(ball_center[0] + ball_size),
+                    int(ball_center[1] + ball_size)
+                ]
+
+        spatial_features = self.extract_spatial_features(
+            ball_bbox=ball_bbox,
+            hoop_bbox=self.hoop_bbox,
+            trajectory=self.shot_sequence_overlaps
+        )
+
         # Log the shot with enhanced analysis data
         shot_data = {
             'timestamp_seconds': self.get_video_timestamp_seconds(),
@@ -784,6 +869,7 @@ class ShotAnalyzer:
             'rim_bounce_confidence': bounce_confidence,
             'entry_angle': entry_angle,
             'post_hoop_analysis': post_hoop_analysis,
+            'spatial_features': spatial_features,
             'detection_method': 'enhanced_multi_factor_v3'
         }
         self.shot_log.append(shot_data)
