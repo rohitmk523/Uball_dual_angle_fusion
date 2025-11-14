@@ -445,6 +445,12 @@ class DualAngleFusion:
         near_shots = near_data['shots']
         far_shots = far_data['shots']
 
+        # Normalize far angle confidence field name
+        # Far angle uses "confidence", near angle uses "detection_confidence"
+        for shot in far_shots:
+            if 'confidence' in shot and 'detection_confidence' not in shot:
+                shot['detection_confidence'] = shot['confidence']
+
         # Match detections
         match_data = self.match_detections(near_shots, far_shots)
 
