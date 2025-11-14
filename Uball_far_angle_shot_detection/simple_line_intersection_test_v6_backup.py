@@ -26,19 +26,18 @@ import argparse
 class SimplifiedShotAnalyzer:
     """Simplified shot analyzer using line intersection logic"""
 
-    # Zone parameters - V7 Phase 1: EXPANDED vertically to catch early trajectory
-    # V6 Analysis: 10 false negatives where ball "never entered from top"
-    # V7 Priority 1: Expand zone upward to catch ball earlier in arc
-    HOOP_ZONE_WIDTH = 80        # Keep horizontal zone tight
-    HOOP_ZONE_VERTICAL = 95     # Base vertical zone (symmetric bottom)
-    ZONE_EXPANSION_TOP = 100    # V7: EXTRA expansion above hoop (total: 195px above)
-    MIN_FRAMES_IN_ZONE = 8      # Keep strict to avoid false positives
+    # Zone parameters - V5: STRICTER to eliminate false positives
+    # Analysis showed: 156 detections vs 77 GT = 50.6% false positive rate
+    # V5 goal: Reduce false positives by tightening zone and increasing min frames
+    HOOP_ZONE_WIDTH = 80        # TIGHTENED from 100 (back to V3 that worked for Game 1)
+    HOOP_ZONE_VERTICAL = 95     # TIGHTENED from 115 (even stricter than V3's 100)
+    MIN_FRAMES_IN_ZONE = 8      # INCREASED from 3 (eliminate quick passes/dribbles)
 
-    # Ball-to-hoop size ratio thresholds - V7 Phase 1: Further relaxed for edge cases
-    # V6 Analysis: 5 false negatives with ratios 0.417-0.473 (exceeded 0.40 threshold)
-    # V7 Priority 4: Increase to 0.50 to cover all observed valid shots
+    # Ball-to-hoop size ratio thresholds - V6: RELAXED to capture far-distance shots
+    # V4 Analysis: 22 false negatives with ratios 0.28-0.47 (ball farther from camera)
+    # V6: Relaxed upper bound to fix 40.7% of errors (size ratio too strict)
     MIN_BALL_HOOP_RATIO = 0.17  # Keep strict lower bound (foreground rejection)
-    MAX_BALL_HOOP_RATIO = 0.50  # V7: INCREASED from 0.40 (covers ratios up to 0.473)
+    MAX_BALL_HOOP_RATIO = 0.40  # V6: INCREASED from 0.28 (fixes far-shot false negatives)
 
     # Confidence thresholds
     BASKETBALL_CONFIDENCE = 0.35
@@ -427,22 +426,14 @@ class SimplifiedShotAnalyzer:
                     self._finalize_shot_sequence()
             return
 
-        # Check if ball is in hoop zone (V7: asymmetric - expanded upward)
+        # Check if ball is in hoop zone
         ball_x, ball_y = ball['center']
         hoop_x, hoop_y = hoop['center']
 
-        # Horizontal check (symmetric)
         dx = abs(ball_x - hoop_x)
-        in_zone_horizontal = dx <= self.HOOP_ZONE_WIDTH
+        dy = abs(ball_y - hoop_y)
 
-        # Vertical check (V7: asymmetric - more space above to catch early trajectory)
-        # Above hoop: extended by ZONE_EXPANSION_TOP (195px total above)
-        # Below hoop: standard HOOP_ZONE_VERTICAL (95px below)
-        top_boundary = hoop_y - (self.HOOP_ZONE_VERTICAL + self.ZONE_EXPANSION_TOP)
-        bottom_boundary = hoop_y + self.HOOP_ZONE_VERTICAL
-        in_zone_vertical = top_boundary <= ball_y <= bottom_boundary
-
-        in_zone = in_zone_horizontal and in_zone_vertical
+        in_zone = dx <= self.HOOP_ZONE_WIDTH and dy <= self.HOOP_ZONE_VERTICAL
 
         if in_zone:
             self.frames_since_last_shot = 0
@@ -560,13 +551,12 @@ class SimplifiedShotAnalyzer:
             x1, y1, x2, y2 = hoop['bbox']
             cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 0, 255), 2)
 
-            # Draw hoop zone (V7: asymmetric - expanded upward)
+            # Draw hoop zone
             hoop_x, hoop_y = hoop['center']
             zone_x1 = hoop_x - self.HOOP_ZONE_WIDTH
             zone_x2 = hoop_x + self.HOOP_ZONE_WIDTH
-            # V7: Asymmetric vertical zone - more space above
-            zone_y1 = hoop_y - (self.HOOP_ZONE_VERTICAL + self.ZONE_EXPANSION_TOP)  # Extended top
-            zone_y2 = hoop_y + self.HOOP_ZONE_VERTICAL  # Standard bottom
+            zone_y1 = hoop_y - self.HOOP_ZONE_VERTICAL
+            zone_y2 = hoop_y + self.HOOP_ZONE_VERTICAL
             cv2.rectangle(annotated, (zone_x1, zone_y1), (zone_x2, zone_y2), (255, 255, 0), 1)
 
         # Draw trajectory
