@@ -23,7 +23,9 @@ class DualAngleFusion:
                  start_time: Optional[int] = None, end_time: Optional[int] = None,
                  use_existing_near: Optional[str] = None,
                  use_existing_far: Optional[str] = None,
-                 skip_video: bool = False):
+                 skip_video: bool = False,
+                 temporal_window: float = 3.0,
+                 prioritize_coverage: bool = False):
         self.near_video = near_video
         self.far_video = far_video
         self.game_id = game_id
@@ -42,6 +44,10 @@ class DualAngleFusion:
         # Video output flag
         self.skip_video = skip_video
 
+        # Temporal matching configuration
+        self.temporal_window = temporal_window
+        self.prioritize_coverage = prioritize_coverage
+
         # Load offset
         with open(offset_file, 'r') as f:
             offset_data = json.load(f)
@@ -58,6 +64,10 @@ class DualAngleFusion:
             print(f"   📂 Using existing far results: {use_existing_far}")
         if skip_video:
             print(f"   ⚡ Video output skipped (analysis only mode)")
+        if temporal_window != 2.0:
+            print(f"   ⏱️  Temporal window: ±{temporal_window}s (default: ±2.0s)")
+        if prioritize_coverage:
+            print(f"   📈 Mode: High Recall (prioritize GT coverage over precision)")
 
         # Store result directory references
         self.near_result_dir = None
@@ -252,8 +262,8 @@ class DualAngleFusion:
         matched_near = set()
         matched_far = set()
 
-        # Matching window: ±2 seconds
-        time_window = 2.0
+        # Matching window: configurable (default ±3 seconds)
+        time_window = self.temporal_window
 
         for i, near_shot in enumerate(near_shots):
             near_time = near_shot['timestamp_seconds']
@@ -379,15 +389,32 @@ class DualAngleFusion:
     def process_unmatched(self, unmatched: List[Dict], source: str) -> List[Dict]:
         """
         Decide whether to keep unmatched detections
-        Balanced approach: keep high-confidence unmatched shots
+        Two modes:
+        - High Precision (default): conf > 0.75 for both near and far
+        - High Recall (prioritize_coverage): ALL near shots, conf > 0.65 for far
         """
         kept = []
+
+        # Determine threshold based on mode and source
+        if self.prioritize_coverage:
+            # High recall mode: prioritize GT coverage
+            if source == 'near':
+                # Near has best GT coverage (97.4%), keep ALL unmatched shots
+                threshold = 0.0  # Keep all
+                mode_desc = "all shots (high recall mode)"
+            else:
+                # Far: lower threshold to catch more real shots
+                threshold = 0.65
+                mode_desc = f"conf > {threshold} (high recall mode)"
+        else:
+            # High precision mode (default)
+            threshold = 0.75
+            mode_desc = f"conf > {threshold}"
 
         for shot in unmatched:
             confidence = shot.get('detection_confidence', 0.5)
 
-            # Keep if confidence > 0.75 (high confidence in single angle)
-            if confidence > 0.75:
+            if confidence > threshold:
                 kept.append({
                     'timestamp_seconds': shot['timestamp_seconds'],
                     'outcome': shot.get('outcome', 'undetermined'),
@@ -402,7 +429,7 @@ class DualAngleFusion:
                     }
                 })
 
-        print(f"   Kept {len(kept)}/{len(unmatched)} unmatched {source} shots (conf > 0.75)")
+        print(f"   Kept {len(kept)}/{len(unmatched)} unmatched {source} shots ({mode_desc})")
         return kept
 
     def fuse_detections(self, near_file: str, far_file: str) -> str:
@@ -790,6 +817,8 @@ def main():
     parser.add_argument('--use_existing_near', type=str, help='Path to existing near angle result directory')
     parser.add_argument('--use_existing_far', type=str, help='Path to existing far angle result directory')
     parser.add_argument('--skip_video', action='store_true', help='Skip video stitching (much faster, only generate JSON results)')
+    parser.add_argument('--temporal_window', type=float, default=3.0, help='Temporal matching window in seconds (default: 3.0)')
+    parser.add_argument('--prioritize_coverage', action='store_true', help='High recall mode: prioritize GT coverage over precision (keeps all unmatched near shots)')
 
     args = parser.parse_args()
 
@@ -806,7 +835,9 @@ def main():
         end_time=args.end_time,
         use_existing_near=args.use_existing_near,
         use_existing_far=args.use_existing_far,
-        skip_video=args.skip_video
+        skip_video=args.skip_video,
+        temporal_window=args.temporal_window,
+        prioritize_coverage=args.prioritize_coverage
     )
 
     fusion.run()
