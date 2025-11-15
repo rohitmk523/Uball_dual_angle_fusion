@@ -390,14 +390,14 @@ class DualAngleFusion:
         base_conf = (near_conf + far_conf) / 2.0
 
         # Feature weights (sum to 1.0)
-        # V2.2: Optimized for angle disagreement resolution
+        # V3: Rebalanced based on error analysis
         weights = {
-            'outcome_agreement': 0.25,
-            'rim_bounce_agreement': 0.30,     # CRITICAL for rim bounces
-            'entry_angle_consistency': 0.15,
-            'swoosh_speed': 0.15,
-            'overlap_quality': 0.05,          # Reduced from 0.10 (near angle)
-            'line_intersection': 0.15         # Increased from 0.10 (far angle - strong signal)
+            'outcome_agreement': 0.20,        # Reduced (N/A in disagreement cases)
+            'rim_bounce_agreement': 0.35,     # INCREASED - most critical for error reduction
+            'entry_angle_consistency': 0.12,   # Reduced slightly
+            'swoosh_speed': 0.18,             # INCREASED - good made/missed indicator
+            'overlap_quality': 0.05,           # Keep same
+            'line_intersection': 0.10          # REDUCED - was over-trusted in V2.2
         }
 
         scores = {}
@@ -464,9 +464,113 @@ class DualAngleFusion:
             'weighted_score': weighted_score
         }
 
+    def classify_shot_type(self, feature_scores: Dict, near_shot: Dict, far_shot: Dict) -> Dict:
+        """
+        V3.1: Shot type classification for angle-specific reliability weighting
+        Returns: {type, reliable_angle, near_boost, far_boost}
+        """
+        line_int = feature_scores.get('line_intersection', 0)
+        swoosh = feature_scores.get('swoosh_speed', 0)
+        near_rb = near_shot.get('is_rim_bounce', False)
+        far_rb = far_shot.get('bounced_back_out', False)
+        overlap = feature_scores.get('overlap_quality', 0)
+
+        # Clean swish: Line cross, fast swoosh, no bounce
+        if line_int >= 0.8 and swoosh >= 0.7 and not near_rb and not far_rb:
+            return {
+                'type': 'clean_swish',
+                'reliable_angle': 'both',
+                'near_boost': 1.0,
+                'far_boost': 1.0
+            }
+
+        # Rim make: Line cross, medium/slow swoosh, possible bounce
+        if line_int >= 0.8 and swoosh < 0.7 and (near_rb or far_rb):
+            return {
+                'type': 'rim_make',
+                'reliable_angle': 'near',  # Near better at rim contact
+                'near_boost': 1.3,
+                'far_boost': 0.8
+            }
+
+        # Rim bounce out: Some line cross, bounce detected
+        if 0.3 <= line_int < 0.8 and (near_rb or far_rb):
+            return {
+                'type': 'rim_bounce_out',
+                'reliable_angle': 'near',  # Near sees bounce better
+                'near_boost': 1.4,
+                'far_boost': 0.7
+            }
+
+        # Near-rim miss: Little/no line cross, good overlap, possible bounce
+        if line_int < 0.5 and overlap > 0.5 and (near_rb or far_rb):
+            return {
+                'type': 'near_rim_miss',
+                'reliable_angle': 'near',
+                'near_boost': 1.3,
+                'far_boost': 0.8
+            }
+
+        # Clean miss: No line cross, no bounce
+        if line_int < 0.3 and not near_rb and not far_rb:
+            return {
+                'type': 'clean_miss',
+                'reliable_angle': 'both',
+                'near_boost': 1.0,
+                'far_boost': 1.0
+            }
+
+        # Default: uncertain type
+        return {
+            'type': 'uncertain',
+            'reliable_angle': 'both',
+            'near_boost': 1.0,
+            'far_boost': 1.0
+        }
+
+    def cross_angle_validation(self, near_shot: Dict, far_shot: Dict, fused_outcome: str,
+                               fused_confidence: float, feature_scores: Dict) -> Tuple[str, float, List[str]]:
+        """
+        V3.3: Cross-angle consistency validation
+        Returns: (adjusted_outcome, adjusted_confidence, flags)
+        """
+        flags = []
+        adjusted_outcome = fused_outcome
+        adjusted_confidence = fused_confidence
+
+        near_out = near_shot.get('outcome')
+        far_out = far_shot.get('outcome')
+
+        # Flag 1: Far says made with high line cross, but near shows rim bounce
+        if (far_out == 'made' and
+            feature_scores.get('line_intersection', 0) >= 0.8 and
+            near_shot.get('is_rim_bounce', False)):
+            flags.append('rim_bounce_vs_line_cross')
+            # Strong signal this is a rim bounce out - trust near
+            if fused_outcome == 'made':
+                adjusted_outcome = 'missed'
+                adjusted_confidence *= 0.7
+
+        # Flag 2: Both high confidence but disagree, no clear physical reason
+        near_conf = near_shot.get('detection_confidence', 0.5)
+        far_conf = far_shot.get('confidence', far_shot.get('detection_confidence', 0.5))
+        if (abs(near_conf - far_conf) < 0.1 and
+            near_out != far_out and
+            not near_shot.get('is_rim_bounce') and
+            not far_shot.get('bounced_back_out')):
+            flags.append('unexplained_high_conf_disagreement')
+            # Use feature tiebreaker - trust swoosh speed
+            if feature_scores.get('swoosh_speed', 0) >= 0.8:
+                # Fast swoosh suggests made
+                if fused_outcome == 'missed':
+                    adjusted_outcome = 'made'
+                    adjusted_confidence *= 0.85
+
+        return adjusted_outcome, adjusted_confidence, flags
+
     def resolve_disagreement(self, near_shot: Dict, far_shot: Dict, fusion_scores: Dict) -> Tuple[str, float]:
         """
-        V2.2: Confidence-weighted disagreement resolution
+        V3: Enhanced disagreement resolution with shot type awareness
         Returns: (outcome, confidence)
         """
         feature_scores = fusion_scores['feature_scores']
@@ -477,29 +581,56 @@ class DualAngleFusion:
         near_outcome = near_shot.get('outcome', 'undetermined')
         far_outcome = far_shot.get('outcome', 'undetermined')
 
-        # V2.2: Calculate weighted votes for each outcome
-        # Each angle gets a vote weighted by: confidence × feature_support
+        # V3.1: Classify shot type for angle-specific reliability
+        shot_type = self.classify_shot_type(feature_scores, near_shot, far_shot)
 
-        # Feature support for "made"
+        # V3.2: Calculate weighted votes with adjusted feature support weights
+        # Feature support for "made" - rebalanced for V3
         made_feature_support = (
-            feature_scores.get('line_intersection', 0) * 0.35 +      # Strong signal for made
-            feature_scores.get('swoosh_speed', 0) * 0.30 +           # Fast = made
-            feature_scores.get('entry_angle_consistency', 0) * 0.20 + # Good angle = reliable
-            feature_scores.get('overlap_quality', 0) * 0.15          # Good overlap = reliable
+            feature_scores.get('line_intersection', 0) * 0.28 +      # REDUCED from 0.35 (was over-trusted)
+            feature_scores.get('swoosh_speed', 0) * 0.35 +           # INCREASED from 0.30 (good signal)
+            feature_scores.get('entry_angle_consistency', 0) * 0.20 +
+            feature_scores.get('overlap_quality', 0) * 0.17          # INCREASED from 0.15
         )
 
-        # Feature support for "missed"
+        # Feature support for "missed" - rebalanced for V3
         missed_feature_support = (
-            (1.0 - feature_scores.get('line_intersection', 0)) * 0.40 +  # No line cross = missed
-            (1.0 - feature_scores.get('swoosh_speed', 0)) * 0.35 +       # Slow = missed
-            feature_scores.get('rim_bounce_agreement', 0) * 0.25         # Bounce agreement helps
+            (1.0 - feature_scores.get('line_intersection', 0)) * 0.32 +  # REDUCED from 0.40
+            (1.0 - feature_scores.get('swoosh_speed', 0)) * 0.35 +
+            feature_scores.get('rim_bounce_agreement', 0) * 0.33         # INCREASED from 0.25 (critical)
         )
 
-        # Calculate weighted votes
+        # Calculate base weighted votes
         near_vote_weight = near_conf * (1.0 + made_feature_support if near_outcome == 'made' else 1.0 + missed_feature_support)
         far_vote_weight = far_conf * (1.0 + made_feature_support if far_outcome == 'made' else 1.0 + missed_feature_support)
 
-        # V2.2: Conservative rim bounce penalty
+        # V3.2: Apply shot-type-specific reliability boosts
+        near_vote_weight *= shot_type['near_boost']
+        far_vote_weight *= shot_type['far_boost']
+
+        # V3.2: Special case handling for common error patterns
+        # Pattern 1: Far says "made" with line cross, but near says "missed"
+        if far_outcome == 'made' and near_outcome == 'missed':
+            if feature_scores.get('line_intersection', 0) >= 0.8:
+                # Check for rim bounce indicators
+                if near_shot.get('is_rim_bounce') or far_shot.get('bounced_back_out'):
+                    # Likely rim bounce - strongly favor near angle
+                    near_vote_weight *= 1.5
+                    far_vote_weight *= 0.6
+                elif feature_scores.get('swoosh_speed', 0) < 0.5:
+                    # Slow swoosh suggests rim contact - favor near
+                    near_vote_weight *= 1.3
+                    far_vote_weight *= 0.7
+
+        # Pattern 2: Near says "made" but far says "missed"
+        elif near_outcome == 'made' and far_outcome == 'missed':
+            # Check if near has strong made indicators
+            if (feature_scores.get('overlap_quality', 0) > 0.7 and
+                feature_scores.get('swoosh_speed', 0) > 0.6):
+                # Near has good evidence - boost it
+                near_vote_weight *= 1.2
+
+        # V2.2: Conservative rim bounce penalty (keep from V2.2)
         rim_bounce_detected = near_shot.get('is_rim_bounce', False) or far_shot.get('bounced_back_out', False)
         if rim_bounce_detected:
             # Strongly penalize "made" votes when rim bounce detected
@@ -517,13 +648,20 @@ class DualAngleFusion:
             confidence = near_conf * (0.8 + 0.2 * (near_vote_weight / (near_vote_weight + far_vote_weight)))
             if rim_bounce_detected and near_outcome == 'made':
                 confidence *= 0.6
-            return near_outcome, min(0.95, confidence)
+            outcome, confidence = near_outcome, min(0.95, confidence)
         else:
             # Far angle wins
             confidence = far_conf * (0.8 + 0.2 * (far_vote_weight / (near_vote_weight + far_vote_weight)))
             if rim_bounce_detected and far_outcome == 'made':
                 confidence *= 0.6
-            return far_outcome, min(0.95, confidence)
+            outcome, confidence = far_outcome, min(0.95, confidence)
+
+        # V3.3: Apply cross-angle validation
+        outcome, confidence, flags = self.cross_angle_validation(
+            near_shot, far_shot, outcome, confidence, feature_scores
+        )
+
+        return outcome, confidence
 
     # ========== End V2 Feature Helpers ==========
 
@@ -693,7 +831,7 @@ class DualAngleFusion:
                 'near_video': self.near_video,
                 'far_video': self.far_video,
                 'offset': self.offset,
-                'fusion_version': 'feature_weighted_v2.2'
+                'fusion_version': 'feature_weighted_v3.0'
             },
             'statistics': {
                 'total_shots': len(fused_shots),
@@ -944,7 +1082,7 @@ class DualAngleFusion:
                 'near_video_path': self.near_video,
                 'far_video_path': self.far_video,
                 'offset': self.offset,
-                'fusion_version': 'feature_weighted_v2.2'
+                'fusion_version': 'feature_weighted_v3.0'
             },
             'files': {
                 'detection_results': 'detection_results.json',
