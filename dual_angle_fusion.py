@@ -124,8 +124,8 @@ class DualAngleFusion:
         results_dir = Path("Uball_near_angle_shot_detection/results")
         before_time = datetime.now().timestamp() - 2.0
 
-        # Convert paths to absolute, accounting for subproject structure
-        # near_video is relative to near angle project (e.g., "input/09-23/game1_nearleft.mp4")
+        # Convert paths to absolute from current directory
+        # near_video is relative to near angle subproject (e.g., "input/09-23/game1_nearleft.mp4")
         abs_near_video = str((Path("Uball_near_angle_shot_detection") / self.near_video).resolve())
         abs_near_model = str(Path(self.near_model).resolve())
 
@@ -189,8 +189,8 @@ class DualAngleFusion:
         results_dir = Path("Uball_far_angle_shot_detection/results")
         before_time = datetime.now().timestamp() - 2.0
 
-        # Convert paths to absolute, accounting for subproject structure
-        # far_video is relative to far angle project (e.g., "input/09-23/Game-1/game1_farright.mp4")
+        # Convert paths to absolute from current directory
+        # far_video is relative to far angle subproject (e.g., "input/09-23/Game-1/game1_farright.mp4")
         abs_far_video = str((Path("Uball_far_angle_shot_detection") / self.far_video).resolve())
         abs_far_model = str(Path(self.far_model).resolve())
 
@@ -308,78 +308,259 @@ class DualAngleFusion:
             'unmatched_far': unmatched_far
         }
 
+    # ========== V2 Feature Extraction Helpers ==========
+
+    def check_rim_bounce_agreement(self, near_shot: Dict, far_shot: Dict) -> Dict:
+        """
+        Both angles should agree on rim bounce detection
+        High confidence when both detect bounce or both don't
+        """
+        near_bounce = near_shot.get('is_rim_bounce', False)
+        far_bounce = far_shot.get('bounced_back_out', False)
+
+        # Agreement cases
+        if near_bounce and far_bounce:
+            return {'agreement': True, 'is_bounce': True, 'confidence': 0.95}
+        elif not near_bounce and not far_bounce:
+            return {'agreement': True, 'is_bounce': False, 'confidence': 0.9}
+        else:
+            # Disagreement - trust near angle (better rim visibility)
+            return {'agreement': False, 'is_bounce': near_bounce, 'confidence': 0.7}
+
+    def check_entry_angle_consistency(self, near_shot: Dict, far_shot: Dict) -> Dict:
+        """
+        Entry angles should be similar for the same shot
+        Near: measured from side view (entry_angle)
+        Far: derived from trajectory (valid_top_crossings)
+        """
+        near_angle = near_shot.get('entry_angle', None)
+        far_top_crossings = far_shot.get('valid_top_crossings', 0)
+
+        # Rough mapping:
+        # Near entry_angle > 50° = steep (from above)
+        # Near entry_angle < 40° = shallow (line drive)
+
+        if near_angle is not None:
+            if near_angle > 50 and far_top_crossings > 0:
+                # Steep angle confirmed by far top crossing
+                return {'consistent': True, 'confidence_boost': 1.1}
+            elif near_angle < 40 and far_top_crossings == 0:
+                # Shallow angle confirmed by no top crossing
+                return {'consistent': True, 'confidence_boost': 1.05}
+            else:
+                # Inconsistent angles - potential mismatch
+                return {'consistent': False, 'confidence_penalty': 0.9}
+        else:
+            # No near angle data - neutral
+            return {'consistent': None, 'confidence_boost': 1.0}
+
+    def analyze_swoosh_speed(self, near_shot: Dict, far_shot: Dict) -> Dict:
+        """
+        Fast disappearance = clean make
+        Slow/oscillating = rim bounce or miss
+        """
+        # Near angle: use post_hoop_analysis
+        post_hoop = near_shot.get('post_hoop_analysis', {})
+        near_continues_down = post_hoop.get('ball_continues_down', False)
+        near_downward = post_hoop.get('downward_movement', 0)
+
+        # Far angle: use size_ratio progression and line crossings
+        far_size_ratio = far_shot.get('avg_size_ratio', 0)
+        far_bottom_crossings = far_shot.get('valid_bottom_crossings', 0)
+
+        # Fast swoosh indicators:
+        # - Near: ball continues downward smoothly
+        # - Far: size ratio good (ball going through), bottom crossing exists
+
+        if near_continues_down and far_bottom_crossings > 0 and far_size_ratio > 0.6:
+            return {'swoosh_quality': 'fast', 'made_confidence': 1.2}
+        elif not near_continues_down and far_bottom_crossings == 0:
+            return {'swoosh_quality': 'slow', 'missed_confidence': 1.15}
+        else:
+            return {'swoosh_quality': 'uncertain', 'confidence': 1.0}
+
+    def calculate_fusion_confidence(self, near_shot: Dict, far_shot: Dict) -> Dict:
+        """
+        Feature-weighted confidence calculation
+        Uses existing features from both angle JSON files
+        """
+        # Base confidence from detection confidences
+        near_conf = near_shot.get('detection_confidence', 0.5)
+        far_conf = far_shot.get('confidence', far_shot.get('detection_confidence', 0.5))
+        base_conf = (near_conf + far_conf) / 2.0
+
+        # Feature weights (sum to 1.0)
+        weights = {
+            'outcome_agreement': 0.30,
+            'rim_bounce_agreement': 0.20,
+            'entry_angle_consistency': 0.15,
+            'swoosh_speed': 0.15,
+            'overlap_quality': 0.10,  # Near angle
+            'line_intersection': 0.10   # Far angle
+        }
+
+        scores = {}
+
+        # 1. Outcome agreement
+        if near_shot.get('outcome') == far_shot.get('outcome'):
+            scores['outcome_agreement'] = 1.0
+        else:
+            scores['outcome_agreement'] = 0.0
+
+        # 2. Rim bounce agreement
+        rim_check = self.check_rim_bounce_agreement(near_shot, far_shot)
+        scores['rim_bounce_agreement'] = 1.0 if rim_check['agreement'] else 0.5
+
+        # 3. Entry angle consistency
+        angle_check = self.check_entry_angle_consistency(near_shot, far_shot)
+        if angle_check['consistent'] is True:
+            scores['entry_angle_consistency'] = 1.0
+        elif angle_check['consistent'] is False:
+            scores['entry_angle_consistency'] = 0.4
+        else:
+            scores['entry_angle_consistency'] = 0.7  # Neutral
+
+        # 4. Swoosh speed
+        swoosh = self.analyze_swoosh_speed(near_shot, far_shot)
+        if swoosh['swoosh_quality'] == 'fast':
+            scores['swoosh_speed'] = 1.0
+        elif swoosh['swoosh_quality'] == 'slow':
+            scores['swoosh_speed'] = 0.6
+        else:
+            scores['swoosh_speed'] = 0.8  # Uncertain
+
+        # 5. Overlap quality (near angle)
+        near_overlap = near_shot.get('weighted_overlap_score', 0) / 2.0  # Normalize to 0-1
+        scores['overlap_quality'] = min(1.0, near_overlap)
+
+        # 6. Line intersection (far angle)
+        far_top = far_shot.get('valid_top_crossings', 0)
+        far_bottom = far_shot.get('valid_bottom_crossings', 0)
+        far_crossings = far_top + far_bottom
+        scores['line_intersection'] = min(1.0, far_crossings / 2.0)
+
+        # Calculate weighted score
+        weighted_score = sum(weights[k] * scores[k] for k in weights)
+
+        # Apply to base confidence
+        # Formula: base_conf * (0.7 + 0.6 * weighted_score)
+        # Range: 70% to 130% of base confidence
+        final_confidence = base_conf * (0.7 + 0.6 * weighted_score)
+
+        return {
+            'confidence': min(0.99, final_confidence),
+            'feature_scores': scores,
+            'base_confidence': base_conf,
+            'weighted_score': weighted_score
+        }
+
+    def resolve_disagreement(self, near_shot: Dict, far_shot: Dict, fusion_scores: Dict) -> Tuple[str, float]:
+        """
+        Use feature analysis to resolve disagreements
+        Returns: (outcome, confidence)
+        """
+        feature_scores = fusion_scores['feature_scores']
+
+        # High confidence indicators for MADE:
+        made_indicators = [
+            feature_scores.get('rim_bounce_agreement', 0) > 0.8 and
+                not near_shot.get('is_rim_bounce', False),  # Both say no bounce
+            feature_scores.get('swoosh_speed', 0) > 0.8,          # Fast swoosh
+            feature_scores.get('line_intersection', 0) > 0.8,     # Clean pass through
+            feature_scores.get('overlap_quality', 0) > 0.7         # High overlap
+        ]
+
+        # High confidence indicators for MISSED:
+        missed_indicators = [
+            feature_scores.get('rim_bounce_agreement', 0) > 0.8 and
+                (near_shot.get('is_rim_bounce', False) or far_shot.get('bounced_back_out', False)),
+            feature_scores.get('swoosh_speed', 0) < 0.7,
+            feature_scores.get('line_intersection', 0) < 0.5,
+            feature_scores.get('overlap_quality', 0) < 0.4
+        ]
+
+        made_score = sum(made_indicators)
+        missed_score = sum(missed_indicators)
+
+        if made_score > missed_score:
+            return 'made', 0.8 + (made_score * 0.05)
+        elif missed_score > made_score:
+            return 'missed', 0.8 + (missed_score * 0.05)
+        else:
+            # Fall back to higher individual confidence
+            near_conf = near_shot.get('detection_confidence', 0.5)
+            far_conf = far_shot.get('confidence', far_shot.get('detection_confidence', 0.5))
+            if near_conf > far_conf:
+                return near_shot.get('outcome', 'undetermined'), near_conf * 0.9
+            else:
+                return far_shot.get('outcome', 'undetermined'), far_conf * 0.9
+
+    # ========== End V2 Feature Helpers ==========
+
     def fuse_matched_pair(self, match: Dict) -> Dict:
         """
-        Feature-based fusion for matched near+far pair
-        Returns fused shot detection with combined confidence
+        V2 Feature-based fusion for matched near+far pair
+        Uses rich features from both angles for improved accuracy
         """
         near = match['near_shot']
         far = match['far_shot']
 
-        # Extract features from both angles
-        near_conf = near.get('detection_confidence', 0.5)
-        far_conf = far.get('detection_confidence', 0.5)
+        # Calculate feature-based confidence using V2 algorithm
+        fusion_analysis = self.calculate_fusion_confidence(near, far)
 
+        # Extract outcomes
         near_outcome = near.get('outcome', 'undetermined')
         far_outcome = far.get('outcome', 'undetermined')
 
-        # Feature 1: Outcome agreement
-        outcome_agrees = (near_outcome == far_outcome)
-
-        # Feature 2: Detection confidence (average)
-        avg_confidence = (near_conf + far_conf) / 2.0
-
-        # Feature 3: Near angle overlap quality (better for proximity shots)
-        near_overlap = near.get('avg_overlap_percentage', 0)
-        near_weighted_score = near.get('weighted_overlap_score', 0)
-
-        # Feature 4: Far angle line intersection confidence
-        far_score = far.get('line_intersection_score', 0)
-
-        # Fusion Decision Logic (Balanced F1 optimization)
-        fusion_confidence = 0.0
-        final_outcome = 'undetermined'
-        fusion_method = ''
-
-        if outcome_agrees:
-            # Both angles agree - high confidence
-            fusion_confidence = min(0.95, avg_confidence * 1.15)
+        # Determine final outcome
+        if near_outcome == far_outcome:
+            # Both angles agree - use agreed outcome with boosted confidence
             final_outcome = near_outcome
-            fusion_method = 'agreement'
+            fusion_confidence = fusion_analysis['confidence']
+            fusion_method = 'v2_agreement'
         else:
-            # Angles disagree - use feature-based arbitration
+            # Angles disagree - use V2 feature-based resolution
+            final_outcome, fusion_confidence = self.resolve_disagreement(near, far, fusion_analysis)
+            fusion_method = 'v2_feature_resolution'
 
-            # Weight by confidence and angle-specific reliability
-            near_weight = near_conf * (1 + near_overlap / 100.0)
-            far_weight = far_conf * (1 + far_score / 10.0)
+        # Extract confidence values
+        near_conf = near.get('detection_confidence', 0.5)
+        far_conf = far.get('confidence', far.get('detection_confidence', 0.5))
 
-            if near_weight > far_weight:
-                final_outcome = near_outcome
-                fusion_confidence = near_conf * 0.85  # Penalty for disagreement
-                fusion_method = 'near_dominant'
-            else:
-                final_outcome = far_outcome
-                fusion_confidence = far_conf * 0.85
-                fusion_method = 'far_dominant'
-
-        # Build fused shot
+        # Build fused shot with V2 enriched metadata
         fused_shot = {
-            'timestamp_seconds': near['timestamp_seconds'],  # Use near timestamp as reference
+            'timestamp_seconds': near['timestamp_seconds'],
             'outcome': final_outcome,
             'fusion_method': fusion_method,
             'fusion_confidence': fusion_confidence,
-            'outcome_agreement': outcome_agrees,
+            'outcome_agreement': (near_outcome == far_outcome),
             'time_diff': match['time_diff'],
+
+            # V2 Feature Analysis
+            'feature_analysis': {
+                'weighted_score': fusion_analysis['weighted_score'],
+                'base_confidence': fusion_analysis['base_confidence'],
+                'feature_scores': fusion_analysis['feature_scores']
+            },
+
+            # Near angle detection details
             'near_detection': {
                 'outcome': near_outcome,
                 'confidence': near_conf,
-                'overlap': near_overlap,
+                'entry_angle': near.get('entry_angle'),
+                'is_rim_bounce': near.get('is_rim_bounce', False),
+                'weighted_overlap_score': near.get('weighted_overlap_score', 0),
                 'method': near.get('detection_method', 'unknown')
             },
+
+            # Far angle detection details
             'far_detection': {
                 'outcome': far_outcome,
                 'confidence': far_conf,
-                'score': far_score,
+                'valid_top_crossings': far.get('valid_top_crossings', 0),
+                'valid_bottom_crossings': far.get('valid_bottom_crossings', 0),
+                'bounced_back_out': far.get('bounced_back_out', False),
+                'avg_size_ratio': far.get('avg_size_ratio', 0),
                 'method': far.get('detection_method', 'unknown')
             }
         }
