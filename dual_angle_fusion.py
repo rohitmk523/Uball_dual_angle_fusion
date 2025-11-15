@@ -499,10 +499,10 @@ class DualAngleFusion:
         near_vote_weight = near_conf * (1.0 + made_feature_support if near_outcome == 'made' else 1.0 + missed_feature_support)
         far_vote_weight = far_conf * (1.0 + made_feature_support if far_outcome == 'made' else 1.0 + missed_feature_support)
 
-        # V2.1: Conservative rim bounce penalty (keep from V2.1)
+        # V2.2: Conservative rim bounce penalty
         rim_bounce_detected = near_shot.get('is_rim_bounce', False) or far_shot.get('bounced_back_out', False)
         if rim_bounce_detected:
-            # Heavily penalize "made" votes when rim bounce is detected
+            # Strongly penalize "made" votes when rim bounce detected
             if near_outcome == 'made':
                 near_vote_weight *= 0.3
             if far_outcome == 'made':
@@ -516,13 +516,13 @@ class DualAngleFusion:
             # Near angle wins
             confidence = near_conf * (0.8 + 0.2 * (near_vote_weight / (near_vote_weight + far_vote_weight)))
             if rim_bounce_detected and near_outcome == 'made':
-                confidence *= 0.6  # Extra penalty for made + rim bounce
+                confidence *= 0.6
             return near_outcome, min(0.95, confidence)
         else:
             # Far angle wins
             confidence = far_conf * (0.8 + 0.2 * (far_vote_weight / (near_vote_weight + far_vote_weight)))
             if rim_bounce_detected and far_outcome == 'made':
-                confidence *= 0.6  # Extra penalty for made + rim bounce
+                confidence *= 0.6
             return far_outcome, min(0.95, confidence)
 
     # ========== End V2 Feature Helpers ==========
