@@ -725,6 +725,7 @@ class DualAngleFusion:
         """
         Stitch videos: far angle on top, near angle on bottom
         With fusion predictions overlay on top right
+        Applies offset to synchronize videos properly
         """
         print("\n🎬 Stitching Videos...")
 
@@ -736,6 +737,15 @@ class DualAngleFusion:
         fps = near_cap.get(cv2.CAP_PROP_FPS)
         width = int(near_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(near_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+        # Apply offset synchronization
+        # Offset > 0 means far is ahead of near, so skip initial frames in far video
+        offset_frames = int(self.offset * fps)
+        print(f"   Applying offset: {self.offset:.4f}s = {offset_frames} frames")
+        print(f"   (Far angle is ahead, skipping {offset_frames} frames in far video)")
+
+        for _ in range(offset_frames):
+            far_cap.read()
 
         # Ensure result directory exists before writing
         self.result_dir.mkdir(parents=True, exist_ok=True)
