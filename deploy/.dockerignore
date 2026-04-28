@@ -1,0 +1,15 @@
+# Heavy / reproducible artifacts — never ship these into the image.
+results/
+input/
+offsets/
+__pycache__/
+**/__pycache__/
+**/*.pyc
+.DS_Store
+.git/
+.gitignore
+.env
+.claude/
+
+# The weights we strip anyway — skip shipping them to cut build context.
+**/runs/

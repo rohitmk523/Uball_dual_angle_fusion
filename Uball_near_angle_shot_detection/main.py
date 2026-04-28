@@ -122,7 +122,7 @@ def live_detection(model_path='runs/detect/basketball_yolo11n3/weights/best.pt',
             
     return True
 
-def process_video(video_path, model_path='runs/detect/basketball_yolo11n3/weights/best.pt', output_path=None, save_session=True, start_time=None, end_time=None, game_id=None, validate_accuracy=False, angle=None):
+def process_video(video_path, model_path='runs/detect/basketball_yolo11n3/weights/best.pt', output_path=None, save_session=True, start_time=None, end_time=None, game_id=None, validate_accuracy=False, angle=None, skip_video=False):
     """Process single video file for basketball detection"""
     
     video_path = Path(video_path)
@@ -190,9 +190,17 @@ def process_video(video_path, model_path='runs/detect/basketball_yolo11n3/weight
     # Seek to start frame
     cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
     
-    # Setup video writer (use same FPS as input for consistency)
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = cv2.VideoWriter(str(output_path), fourcc, fps, (width, height))
+    # Setup video writer (use same FPS as input for consistency) - skip if skip_video is True
+    out = None
+    if not skip_video:
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out = cv2.VideoWriter(str(output_path), fourcc, fps, (width, height))
+        if not out.isOpened():
+            print(f"❌ Failed to create output video writer")
+            cap.release()
+            return False
+    else:
+        print("⚡ Video output skipped (analysis only mode)")
     
     frame_count = start_frame
     processing_start_time = time.time()
@@ -216,11 +224,14 @@ def process_video(video_path, model_path='runs/detect/basketball_yolo11n3/weight
             # Update shot tracking
             analyzer.update_shot_tracking(detections)
             
-            # Draw overlay
-            annotated_frame = analyzer.draw_overlay(frame, detections)
-            
-            # Write frame
-            out.write(annotated_frame)
+            # Draw overlay (only if writing video)
+            if not skip_video:
+                annotated_frame = analyzer.draw_overlay(frame, detections)
+                # Write frame
+                out.write(annotated_frame)
+            else:
+                # Still need to draw overlay for detection tracking, but don't save
+                analyzer.draw_overlay(frame, detections)
             
             # Progress update
             if frames_processed % 100 == 0:
@@ -235,7 +246,8 @@ def process_video(video_path, model_path='runs/detect/basketball_yolo11n3/weight
     finally:
         # Cleanup
         cap.release()
-        out.release()
+        if out is not None:
+            out.release()
         
         # Save session data
         session_filename = None
@@ -269,11 +281,13 @@ def process_video(video_path, model_path='runs/detect/basketball_yolo11n3/weight
             
             try:
                 validator = AccuracyValidator()
+                # Only pass processed_video_path if video was actually created
+                processed_video_for_validation = str(output_path) if not skip_video and Path(output_path).exists() else None
                 validation_result = validator.validate_detection(
                     game_id=game_id,
                     detection_json_path=session_filename,
                     video_path=str(video_path),
-                    processed_video_path=str(output_path),
+                    processed_video_path=processed_video_for_validation,
                     start_seconds=validation_start_seconds,
                     end_seconds=validation_end_seconds,
                     angle=angle
@@ -299,7 +313,8 @@ def process_video(video_path, model_path='runs/detect/basketball_yolo11n3/weight
         print(f"Total Shots: {analyzer.stats['total_shots']}")
         print(f"Made: {analyzer.stats['made_shots']}")
         print(f"Missed: {analyzer.stats['missed_shots']}")
-        print(f"Output saved: {output_path}")
+        if not skip_video:
+            print(f"Output saved: {output_path}")
         
     return True
 
@@ -409,6 +424,8 @@ def main():
                        help='Validate accuracy against ground truth data from Supabase')
     parser.add_argument('--angle', type=str, choices=['LEFT', 'RIGHT'],
                        help='Filter ground truth by shooting angle (LEFT or RIGHT)')
+    parser.add_argument('--skip_video', action='store_true',
+                       help='Skip video output (analysis only, much faster)')
     
     args = parser.parse_args()
     
@@ -431,7 +448,8 @@ def main():
             end_time=args.end_time,
             game_id=args.game_id,
             validate_accuracy=args.validate_accuracy,
-            angle=args.angle
+            angle=args.angle,
+            skip_video=args.skip_video
         )
         
     elif args.action == 'batch':

@@ -61,10 +61,13 @@ class AccuracyValidator:
         if video_path:
             video_path_obj = Path(video_path)
             filename = video_path_obj.stem  # game2_nearright
-            parent_name = video_path_obj.parent.name  # 09-22
-            
-            # Extract date prefix (e.g., "09-22")
-            date_prefix = parent_name if re.match(r'\d{2}-\d{2}', parent_name) else None
+
+            # Extract date prefix (e.g., "09-22") - search through all path parts
+            date_prefix = None
+            for part in video_path_obj.parts:
+                if re.match(r'\d{2}-\d{2}', part):
+                    date_prefix = part
+                    break
             
             # Extract game number (e.g., "2" from "game2")
             game_match = re.search(r'game(\d+)', filename, re.IGNORECASE)

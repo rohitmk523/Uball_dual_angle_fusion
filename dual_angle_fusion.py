@@ -9,6 +9,7 @@ import subprocess
 import argparse
 import os
 import shutil
+import sys
 from pathlib import Path
 from datetime import datetime
 import uuid
@@ -18,7 +19,7 @@ from typing import Dict, List, Tuple, Optional
 
 class DualAngleFusion:
     def __init__(self, near_video: str, far_video: str, game_id: str,
-                 near_model: str, far_model: str, offset_file: str,
+                 near_model: str, far_model: str, offset_file: Optional[str] = None,
                  validate: bool = True, angle: str = "LEFT",
                  start_time: Optional[int] = None, end_time: Optional[int] = None,
                  use_existing_near: Optional[str] = None,
@@ -48,10 +49,14 @@ class DualAngleFusion:
         self.temporal_window = temporal_window
         self.prioritize_coverage = prioritize_coverage
 
-        # Load offset
-        with open(offset_file, 'r') as f:
-            offset_data = json.load(f)
-            self.offset = offset_data['calculated_offset']
+        # Load offset (default to 0.0 if not provided)
+        if offset_file:
+            with open(offset_file, 'r') as f:
+                offset_data = json.load(f)
+                self.offset = offset_data['calculated_offset']
+        else:
+            self.offset = 0.0
+            print(f"⚠️  No offset file provided, using default offset: 0.0s")
 
         print(f"🔄 Dual-Angle Fusion Initialized")
         print(f"   Near: {near_video}")
@@ -125,8 +130,18 @@ class DualAngleFusion:
         before_time = datetime.now().timestamp() - 2.0
 
         # Convert paths to absolute from current directory
-        # near_video is relative to near angle subproject (e.g., "input/09-23/game1_nearleft.mp4")
-        abs_near_video = str((Path("Uball_near_angle_shot_detection") / self.near_video).resolve())
+        # Check if video exists at root level first, otherwise use subdirectory path
+        root_video_path = Path(self.near_video).resolve()
+        subdir_video_path = (Path("Uball_near_angle_shot_detection") / self.near_video).resolve()
+        
+        if root_video_path.exists():
+            abs_near_video = str(root_video_path)
+        elif subdir_video_path.exists():
+            abs_near_video = str(subdir_video_path)
+        else:
+            # Try subdirectory path anyway (for backwards compatibility)
+            abs_near_video = str(subdir_video_path)
+        
         abs_near_model = str(Path(self.near_model).resolve())
 
         cmd = [
@@ -146,13 +161,24 @@ class DualAngleFusion:
 
         if self.validate:
             cmd.append("--validate_accuracy")
+        
+        if self.skip_video:
+            cmd.append("--skip_video")
 
-        # Run from the near angle detection directory
-        result = subprocess.run(cmd, capture_output=True, text=True,
-                              cwd="Uball_near_angle_shot_detection")
-
+        # Run from the near angle detection directory with real-time output
+        # Use stdout=None to print directly (real-time), capture stderr for errors
+        result = subprocess.run(
+            cmd,
+            stdout=None,  # Print directly to console for real-time progress
+            stderr=subprocess.PIPE,
+            text=True,
+            cwd="Uball_near_angle_shot_detection"
+        )
+        
         if result.returncode != 0:
-            raise Exception(f"Near angle detection failed: {result.stderr}")
+            if result.stderr:
+                print(result.stderr, file=sys.stderr)
+            raise Exception(f"Near angle detection failed")
 
         # Find directory created AFTER the timestamp (not just the latest overall)
         result_dirs = [d for d in results_dir.glob("*")
@@ -161,8 +187,8 @@ class DualAngleFusion:
 
         if not result_dirs:
             print(f"DEBUG: No new directories found with mtime > {before_time}")
-            print(f"DEBUG: subprocess stdout: {result.stdout}")
-            print(f"DEBUG: subprocess stderr: {result.stderr}")
+            if result.stderr:
+                print(f"DEBUG: subprocess stderr: {result.stderr}")
             raise Exception("No new result directory created by near angle detection")
 
         latest_dir = max(result_dirs, key=os.path.getmtime)
@@ -190,8 +216,18 @@ class DualAngleFusion:
         before_time = datetime.now().timestamp() - 2.0
 
         # Convert paths to absolute from current directory
-        # far_video is relative to far angle subproject (e.g., "input/09-23/Game-1/game1_farright.mp4")
-        abs_far_video = str((Path("Uball_far_angle_shot_detection") / self.far_video).resolve())
+        # Check if video exists at root level first, otherwise use subdirectory path
+        root_video_path = Path(self.far_video).resolve()
+        subdir_video_path = (Path("Uball_far_angle_shot_detection") / self.far_video).resolve()
+        
+        if root_video_path.exists():
+            abs_far_video = str(root_video_path)
+        elif subdir_video_path.exists():
+            abs_far_video = str(subdir_video_path)
+        else:
+            # Try subdirectory path anyway (for backwards compatibility)
+            abs_far_video = str(subdir_video_path)
+        
         abs_far_model = str(Path(self.far_model).resolve())
 
         cmd = [
@@ -211,13 +247,23 @@ class DualAngleFusion:
 
         if self.validate:
             cmd.append("--validate_accuracy")
+        
+        if self.skip_video:
+            cmd.append("--skip_video")
 
-        # Run from the far angle detection directory
-        result = subprocess.run(cmd, capture_output=True, text=True,
-                              cwd="Uball_far_angle_shot_detection")
-
+        # Run from the far angle detection directory with real-time output
+        # Use stdout=None and stderr=None to print both directly (real-time)
+        # Far angle uses logger which outputs to stderr
+        result = subprocess.run(
+            cmd,
+            stdout=None,  # Print directly to console for real-time progress
+            stderr=None,  # Also print stderr directly (logger output)
+            text=True,
+            cwd="Uball_far_angle_shot_detection"
+        )
+        
         if result.returncode != 0:
-            raise Exception(f"Far angle detection failed: {result.stderr}")
+            raise Exception(f"Far angle detection failed")
 
         # Find directory created AFTER the timestamp (not just the latest overall)
         result_dirs = [d for d in results_dir.glob("*")
@@ -226,8 +272,6 @@ class DualAngleFusion:
 
         if not result_dirs:
             print(f"DEBUG: No new directories found with mtime > {before_time}")
-            print(f"DEBUG: subprocess stdout: {result.stdout}")
-            print(f"DEBUG: subprocess stderr: {result.stderr}")
             raise Exception("No new result directory created by far angle detection")
 
         latest_dir = max(result_dirs, key=os.path.getmtime)
@@ -1174,7 +1218,7 @@ def main():
     parser.add_argument('--game_id', required=True, help='Game UUID for ground truth')
     parser.add_argument('--near_model', required=True, help='Near angle YOLO model path')
     parser.add_argument('--far_model', required=True, help='Far angle YOLO model path')
-    parser.add_argument('--offset_file', required=True, help='Path to offset JSON file')
+    parser.add_argument('--offset_file', required=False, help='Path to offset JSON file (optional, defaults to 0.0 if not provided)')
     parser.add_argument('--validate_accuracy', action='store_true', help='Validate against ground truth')
     parser.add_argument('--angle', default='LEFT', choices=['LEFT', 'RIGHT'], help='Angle filter for ground truth')
     parser.add_argument('--start_time', type=int, help='Start time in seconds (for quick testing)')
