@@ -185,23 +185,56 @@ class DualAngleFusion:
                       if d.is_dir() and d.name != '.DS_Store'
                       and os.path.getmtime(d) > before_time]
 
-        if not result_dirs:
+        if result_dirs:
+            latest_dir = max(result_dirs, key=os.path.getmtime)
+
+            # Store for later use
+            self.near_result_dir = latest_dir
+
+            detection_file = latest_dir / "detection_results.json"
+            video_file = latest_dir / "processed_video.mp4"
+
+            print(f"   ✅ Near angle complete (stored in near angle subproject): {latest_dir.name}")
+
+            return str(detection_file), str(video_file)
+
+        # Fallback: in --skip_video (and no --validate_accuracy) mode, the near-angle
+        # subprocess does NOT create a results/<run>/ subdir. It instead writes a flat
+        # `<video_basename>_session.json` in its cwd (Uball_near_angle_shot_detection/).
+        # See Uball_near_angle_shot_detection/main.py:save_session_data — the JSON has
+        # the same {shots, statistics, session_info} shape fuse_detections expects.
+        near_subproject = Path("Uball_near_angle_shot_detection")
+        session_basename = Path(abs_near_video).stem
+        session_candidates = [
+            near_subproject / f"{session_basename}_session.json",
+        ]
+        # Also accept any *_session.json newly written under the subproject — covers
+        # cases where main.py applied a time-range suffix to the basename.
+        for candidate in near_subproject.glob("*_session.json"):
+            try:
+                if os.path.getmtime(candidate) > before_time:
+                    session_candidates.append(candidate)
+            except OSError:
+                continue
+
+        session_file = next((p for p in session_candidates if p.exists()), None)
+        if session_file is None:
             print(f"DEBUG: No new directories found with mtime > {before_time}")
+            print(f"DEBUG: also no flat session JSON in {near_subproject} matching basename={session_basename}")
             if result.stderr:
                 print(f"DEBUG: subprocess stderr: {result.stderr}")
-            raise Exception("No new result directory created by near angle detection")
+            raise Exception("No near-angle output found (no results subdir and no flat session JSON)")
 
-        latest_dir = max(result_dirs, key=os.path.getmtime)
+        # near_result_dir is consumed by copy_ground_truth() — point it at the
+        # subproject dir so that path lookup gracefully no-ops on missing GT.
+        self.near_result_dir = near_subproject
 
-        # Store for later use
-        self.near_result_dir = latest_dir
+        print(f"   ✅ Near angle complete (flat session JSON): {session_file.name}")
 
-        detection_file = latest_dir / "detection_results.json"
-        video_file = latest_dir / "processed_video.mp4"
-
-        print(f"   ✅ Near angle complete (stored in near angle subproject): {latest_dir.name}")
-
-        return str(detection_file), str(video_file)
+        # Return the flat session JSON as the detection file. video_file is unused
+        # in --skip_video mode (stitch_videos is bypassed in run()), so a stub path
+        # is acceptable.
+        return str(session_file), str(near_subproject / "processed_video.mp4")
 
     def run_far_angle_detection(self) -> Tuple[str, str]:
         """
@@ -270,21 +303,57 @@ class DualAngleFusion:
                       if d.is_dir() and d.name != '.DS_Store'
                       and os.path.getmtime(d) > before_time]
 
-        if not result_dirs:
+        if result_dirs:
+            latest_dir = max(result_dirs, key=os.path.getmtime)
+
+            # Store for later use
+            self.far_result_dir = latest_dir
+
+            detection_file = latest_dir / "detection_results.json"
+            video_file = latest_dir / "processed_video.mp4"
+
+            print(f"   ✅ Far angle complete (stored in far angle subproject): {latest_dir.name}")
+
+            return str(detection_file), str(video_file)
+
+        # Fallback: in --skip_video mode, the far-angle subprocess does NOT create a
+        # results/<run>/ subdir. It writes `<video_stem>[_<start>s-<end>s]_session.json`
+        # NEXT TO the input video (see Uball_far_angle_shot_detection/main.py:113).
+        # The JSON's {shots, statistics, session_info} shape matches fuse_detections.
+        far_subproject = Path("Uball_far_angle_shot_detection")
+        far_video_path = Path(abs_far_video)
+        session_candidates = []
+
+        # Exact basename match (no time suffix)
+        session_candidates.append(far_video_path.parent / f"{far_video_path.stem}_session.json")
+        # Time-suffixed variants live alongside the input video
+        for candidate in far_video_path.parent.glob(f"{far_video_path.stem}*_session.json"):
+            try:
+                if os.path.getmtime(candidate) > before_time:
+                    session_candidates.append(candidate)
+            except OSError:
+                continue
+        # Legacy: some runs (and older code paths) drop the JSON inside the subproject dir
+        for candidate in far_subproject.glob("*_session.json"):
+            try:
+                if os.path.getmtime(candidate) > before_time:
+                    session_candidates.append(candidate)
+            except OSError:
+                continue
+
+        session_file = next((p for p in session_candidates if p.exists()), None)
+        if session_file is None:
             print(f"DEBUG: No new directories found with mtime > {before_time}")
-            raise Exception("No new result directory created by far angle detection")
+            print(f"DEBUG: also no flat session JSON next to {far_video_path} or in {far_subproject}")
+            raise Exception("No far-angle output found (no results subdir and no flat session JSON)")
 
-        latest_dir = max(result_dirs, key=os.path.getmtime)
+        # far_result_dir is consumed by generate_session_summary() — point at the
+        # subproject so any path lookups no-op gracefully.
+        self.far_result_dir = far_subproject
 
-        # Store for later use
-        self.far_result_dir = latest_dir
+        print(f"   ✅ Far angle complete (flat session JSON): {session_file.name}")
 
-        detection_file = latest_dir / "detection_results.json"
-        video_file = latest_dir / "processed_video.mp4"
-
-        print(f"   ✅ Far angle complete (stored in far angle subproject): {latest_dir.name}")
-
-        return str(detection_file), str(video_file)
+        return str(session_file), str(far_subproject / "processed_video.mp4")
 
     def match_detections(self, near_shots: List[Dict], far_shots: List[Dict]) -> Dict:
         """
