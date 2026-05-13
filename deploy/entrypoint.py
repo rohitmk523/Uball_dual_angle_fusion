@@ -206,19 +206,54 @@ def _find_latest_results_dir(root: Path) -> Path:
     return max(dirs, key=lambda p: p.stat().st_mtime)
 
 
+# UBA-238: each near-angle camera is physically fixed on one hoop, so the
+# hoop a shot occurred at is fully determined by which side processed it.
+# Side A processes FR+NR (the "right" pair) → right hoop.
+# Side B processes FL+NL (the "left" pair)  → left hoop.
+_SIDE_TO_HOOP = {"A": "right", "B": "left"}
+
+
 def _stamp_metadata(detection_json: Path, *, model_version: str, side: str,
                     near_sha: Optional[str], far_sha: Optional[str]) -> None:
+    """Stamp session-level metadata + per-shot `hoop_side`.
+
+    Per UBA-238 (3.6), each shot gets a `hoop_side` field derived from the
+    SIDE env. The merge container reads this to attribute the shot to the
+    correct team (via plays_sync.py's existing `team="left"|"right"` →
+    `leftTeam`/`rightTeam` mapping). No ML model change — pure post-process.
+    """
     try:
         data = json.loads(detection_json.read_text())
+
+        # ---- session-level metadata ----
         info = data.setdefault("session_info", {})
         info["model_version"] = model_version
         info["side"] = side
+        hoop_side = _SIDE_TO_HOOP.get(side)
+        if hoop_side:
+            info["hoop_side"] = hoop_side
         if near_sha:
             info["near_model_sha256"] = near_sha
         if far_sha:
             info["far_model_sha256"] = far_sha
+
+        # ---- per-shot hoop_side stamping (UBA-238) ----
+        stamped = 0
+        if hoop_side:
+            for shot in data.get("shots", []) or []:
+                # Don't overwrite a hoop_side already present (forward-compat
+                # for a future per-shot detector that could override this).
+                if shot.get("hoop_side") in ("left", "right"):
+                    continue
+                shot["hoop_side"] = hoop_side
+                stamped += 1
+
         detection_json.write_text(json.dumps(data, indent=2))
-        log.info("stamped session_info with model_version=%s side=%s", model_version, side)
+        log.info(
+            "stamped session_info with model_version=%s side=%s hoop_side=%s; "
+            "set hoop_side on %d shot(s)",
+            model_version, side, hoop_side, stamped,
+        )
     except Exception as e:
         log.warning("failed to stamp metadata (%s) — results still uploaded", e)
 
