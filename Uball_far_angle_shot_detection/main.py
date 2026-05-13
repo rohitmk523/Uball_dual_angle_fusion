@@ -36,7 +36,8 @@ def process_video(
     end_time: Optional[float] = None,
     game_id: Optional[str] = None,
     validate_accuracy: bool = False,
-    angle: Optional[str] = None
+    angle: Optional[str] = None,
+    skip_video: bool = False
 ) -> dict:
     """Process video with far angle shot detection
 
@@ -111,16 +112,18 @@ def process_video(
     output_video_path = output_dir / f"{output_stem}_detected.mp4"
     session_json_path = output_dir / f"{output_stem}_session.json"
 
-    # Setup video writer
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = cv2.VideoWriter(str(output_video_path), fourcc, fps, (width, height))
-
-    if not out.isOpened():
-        logger.error("Failed to create output video writer")
-        cap.release()
-        return {'error': 'Failed to create output video writer'}
-
-    logger.info(f"Output video: {output_video_path}")
+    # Setup video writer - skip if skip_video is True
+    out = None
+    if not skip_video:
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out = cv2.VideoWriter(str(output_video_path), fourcc, fps, (width, height))
+        if not out.isOpened():
+            logger.error("Failed to create output video writer")
+            cap.release()
+            return {'error': 'Failed to create output video writer'}
+        logger.info(f"Output video: {output_video_path}")
+    else:
+        logger.info("⚡ Video output skipped (analysis only mode)")
     logger.info(f"Output JSON: {session_json_path}")
 
     # Seek to start frame
@@ -149,11 +152,14 @@ def process_video(
             # Update shot tracking
             analyzer.update_shot_tracking(detections)
 
-            # Draw overlay
-            annotated_frame = analyzer.draw_overlay(frame, detections)
-
-            # Write output frame
-            out.write(annotated_frame)
+            # Draw overlay (only if writing video)
+            if not skip_video:
+                annotated_frame = analyzer.draw_overlay(frame, detections)
+                # Write output frame
+                out.write(annotated_frame)
+            else:
+                # Still need to draw overlay for detection tracking, but don't save
+                analyzer.draw_overlay(frame, detections)
 
             processed_frames += 1
 
@@ -170,7 +176,8 @@ def process_video(
     finally:
         # Cleanup
         cap.release()
-        out.release()
+        if out is not None:
+            out.release()
 
     logger.info(f"Processing complete! Processed {processed_frames} frames")
 
@@ -199,10 +206,12 @@ def process_video(
     results = {
         'success': True,
         'processed_frames': processed_frames,
-        'output_video': str(output_video_path),
         'session_json': str(session_json_path),
         'stats': analyzer.stats.copy()
     }
+    
+    if not skip_video:
+        results['output_video'] = str(output_video_path)
 
     # Validate accuracy if requested
     if validate_accuracy:
@@ -216,11 +225,12 @@ def process_video(
             logger.info(f"Starting accuracy validation for game {game_id}, angle {angle}")
             try:
                 validator = AccuracyValidator()
+                processed_video_path = str(output_video_path) if not skip_video else None
                 validation_results = validator.validate_detection(
                     game_id=game_id,
                     detection_json_path=str(session_json_path),
                     video_path=str(video_path),
-                    processed_video_path=str(output_video_path),
+                    processed_video_path=processed_video_path,
                     start_seconds=start_time,
                     end_seconds=end_time,
                     angle=angle
@@ -354,6 +364,12 @@ Examples:
         help='Camera angle (LEFT or RIGHT) - required for accuracy validation'
     )
 
+    parser.add_argument(
+        '--skip_video',
+        action='store_true',
+        help='Skip video output (analysis only, much faster)'
+    )
+
     args = parser.parse_args()
 
     # Validate arguments
@@ -377,12 +393,14 @@ Examples:
             end_time=args.end_time,
             game_id=args.game_id,
             validate_accuracy=args.validate_accuracy,
-            angle=args.angle
+            angle=args.angle,
+            skip_video=args.skip_video
         )
 
         if results.get('success'):
             logger.info("\n=== Processing Complete ===")
-            logger.info(f"Output Video: {results['output_video']}")
+            if 'output_video' in results:
+                logger.info(f"Output Video: {results['output_video']}")
             logger.info(f"Session JSON: {results['session_json']}")
             logger.info(f"\nShot Statistics:")
             logger.info(f"  Total Shots: {results['stats']['total_shots']}")

@@ -1,0 +1,33 @@
+# Pinned deps for uball-cv-fusion. Installed in the Dockerfile.
+#
+# PyTorch CUDA 12.1 wheels are compatible with CUDA 12.2 runtime images
+# (CUDA is backward-compatible within a major; torch cu121 works on host
+# drivers >=530 + CUDA 12.x runtime). We pull torch from the official
+# PyTorch index to pick up the CUDA-enabled build.
+
+--extra-index-url https://download.pytorch.org/whl/cu121
+
+# Deep learning stack
+torch==2.4.1
+torchvision==0.19.1
+
+# YOLO wrapper (brings its own model zoo; pinning to a recent stable 8.3.x)
+ultralytics==8.3.40
+
+# Vision / numerics
+opencv-python-headless==4.10.0.84
+numpy==1.26.4
+scipy==1.13.1
+filterpy==1.4.5
+
+# I/O + AWS
+boto3==1.35.55
+botocore==1.35.55
+
+# Misc (imported by the fusion script)
+python-dotenv==1.0.1
+python-dateutil==2.9.0.post0
+
+# Supabase — only used when --validate_accuracy is passed (production runs
+# do NOT pass this flag). Included so the import doesn't fail at module load.
+supabase==2.9.1
